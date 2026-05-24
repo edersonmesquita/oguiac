@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ratings   Rating[]
+
+  @@map("users")
+}
+
+model Company {
+  id          String   @id @default(uuid())
+  name        String
+  whatsapp    String
+  address     String
+  logo        String?
+  instagram   String?
+  approved    Boolean  @default(true)
+  facebook    String?
+  youtube     String?
+  website     String?
+  categoryId  String
+  email       String?
+  password    String?
+  planId      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  description String?  @db.VarChar(300)
+  category    Category @relation(fields: [categoryId], references: [id])
+  plan        Plan?    @relation(fields: [planId], references: [id])
+  ratings     Rating[]
+
+  @@map("companies")
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  companies   Company[]
+
+  @@map("categories")
+}
+
+model Rating {
+  id        String   @id @default(uuid())
+  stars     Int      @db.SmallInt
+  companyId String
+  userId    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  company   Company  @relation(fields: [companyId], references: [id])
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@map("ratings")
+}
+
+model admins {
+  id        String   @id
+  username  String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
+
+model Plan {
+  id          String    @id @default(uuid())
+  name        String
+  description String
+  features    String[]
+  price       Float
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  companies   Company[]
+
+  @@map("plans")
+}
