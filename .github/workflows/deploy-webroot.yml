@@ -12,6 +12,13 @@ on:
 jobs:
   ftp-deploy:
     runs-on: ubuntu-latest
+    env:
+      FTP_SERVER_VALUE: ${{ secrets.FTP_SERVER != '' && secrets.FTP_SERVER || secrets.FTP_HOST }}
+      FTP_USERNAME_VALUE: ${{ secrets.FTP_USERNAME != '' && secrets.FTP_USERNAME || secrets.FTP_USER }}
+      FTP_PASSWORD_VALUE: ${{ secrets.FTP_PASSWORD != '' && secrets.FTP_PASSWORD || secrets.FTP_PASS }}
+      FTP_SERVER_DIR_VALUE: ${{ secrets.FTP_SERVER_DIR != '' && secrets.FTP_SERVER_DIR || secrets.FTP_REMOTE_DIR }}
+      FTP_PROTOCOL_VALUE: ${{ secrets.FTP_PROTOCOL != '' && secrets.FTP_PROTOCOL || 'ftp' }}
+      FTP_PORT_VALUE: ${{ secrets.FTP_PORT != '' && secrets.FTP_PORT || 21 }}
 
     steps:
       - name: Checkout repository
@@ -20,10 +27,10 @@ jobs:
       - name: Upload deploy-webroot via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ${{ secrets.FTP_PROTOCOL || 'ftp' }}
-          port: ${{ secrets.FTP_PORT || 21 }}
+          server: ${{ env.FTP_SERVER_VALUE }}
+          username: ${{ env.FTP_USERNAME_VALUE }}
+          password: ${{ env.FTP_PASSWORD_VALUE }}
+          protocol: ${{ env.FTP_PROTOCOL_VALUE }}
+          port: ${{ env.FTP_PORT_VALUE }}
           local-dir: deploy-webroot/
-          server-dir: ${{ secrets.FTP_SERVER_DIR }}
+          server-dir: ${{ env.FTP_SERVER_DIR_VALUE }}
