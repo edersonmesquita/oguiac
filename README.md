@@ -11,6 +11,11 @@ Deploy automatico:
 - Origem publicada: `deploy-webroot/`
 - Gatilho: `push` na branch `main`
 
+SQL do site:
+
+- Arquivo de migracao MySQL adicionado em `deploy-webroot/migrar_dados.sql`
+- Uso esperado: importar esse arquivo no banco MySQL do site depois da estrutura base
+
 Para ativar o deploy no GitHub Actions, cadastre estes secrets no repositorio:
 
 - `FTP_SERVER`

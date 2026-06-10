@@ -31,6 +31,7 @@
 ### Opção B: MySQL
 - Crie um banco MySQL na nuvem.
 - Importe `gcan.sql`.
+- Para a versao PHP/MySQL do site, use tambem `deploy-webroot/migrar_dados.sql` para inserir categorias e empresas.
 - Ajuste backend para driver/ORM de MySQL (o backend atual usa Prisma em PostgreSQL).
 
 ## 4) Checklist Final

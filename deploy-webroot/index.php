@@ -87,11 +87,113 @@ function page_shell(string $title, string $body): void {
     exit;
 }
 
+function home_shell(): void {
+    header('Content-Type: text/html; charset=utf-8');
+    echo <<<'HTML'
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Guia Canindé - Encontre os melhores negócios da cidade</title>
+  <style>
+    :root{color-scheme:light dark;--bg-start:#f5f3ff;--bg-end:#ffffff;--bg-dark-start:#111827;--bg-dark-end:#1f2937;--text:#111827;--text-muted:#4b5563;--text-dark:#f3f4f6;--text-dark-muted:#d1d5db;--surface:#ffffff;--surface-dark:#1f2937;--border:#e5e7eb;--border-dark:#374151;--shadow:0 20px 45px rgba(15,23,42,.10)}
+    *{box-sizing:border-box}
+    body{font-family:Inter,Arial,sans-serif;background:linear-gradient(to bottom right,var(--bg-start),var(--bg-end));margin:0;color:var(--text)}
+    a{text-decoration:none}
+    .top{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(229,231,235,.85)}
+    .nav{display:flex;gap:16px;align-items:center;justify-content:space-between;padding:14px 20px;max-width:1152px;margin:0 auto}
+    .brand{font-weight:800;font-size:22px;background:linear-gradient(90deg,#7c3aed,#16a34a);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .nav-links{display:flex;gap:16px;align-items:center}
+    .nav-links a{color:#4b5563;font-weight:600}
+    .nav-links a:hover{color:#7c3aed}
+    .wrap{max-width:1152px;margin:0 auto;padding:32px 16px 48px}
+    .hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,440px);gap:48px;align-items:center;margin-bottom:48px}
+    .hero-copy h1{margin:0 0 24px;font-size:clamp(2.6rem,6vw,4rem);line-height:1.05;font-weight:800;background:linear-gradient(90deg,#7c3aed,#16a34a);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .hero-copy p{margin:0 0 32px;font-size:1.25rem;line-height:1.7;color:var(--text-muted);max-width:650px}
+    .hero-actions{display:flex;flex-wrap:wrap;gap:16px}
+    .cta{display:inline-flex;align-items:center;justify-content:center;gap:12px;padding:16px 24px;border-radius:18px;color:#fff;font-weight:700;box-shadow:var(--shadow);transform:translateY(0);transition:transform .25s ease,box-shadow .25s ease}
+    .cta:hover{transform:translateY(-4px);box-shadow:0 28px 56px rgba(15,23,42,.16)}
+    .cta-search{background:linear-gradient(90deg,#8b5cf6,#7c3aed)}
+    .cta-register{background:linear-gradient(90deg,#22c55e,#16a34a)}
+    .hero-visual{position:relative;width:100%;aspect-ratio:16/9;max-width:32rem;margin:0 auto}
+    .hero-visual img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:16px}
+    .logo-dark{display:none}
+    .section{margin:0 auto 48px;text-align:center}
+    .section h2{margin:0 0 32px;font-size:clamp(2rem,4vw,2.5rem);font-weight:800;background:linear-gradient(90deg,#7c3aed,#16a34a);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .feature-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;max-width:960px;margin:0 auto}
+    .feature-card{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:32px 28px;box-shadow:0 10px 30px rgba(15,23,42,.08)}
+    .feature-icon{display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:16px;margin:0 auto 16px;font-size:24px}
+    .feature-icon.primary{background:#ede9fe;color:#7c3aed}
+    .feature-icon.secondary{background:#dcfce7;color:#16a34a}
+    .feature-card p{margin:0;font-size:1.1rem;line-height:1.8;color:#374151}
+    .feature-card strong{color:#7c3aed}
+    .footer-copy{text-align:center;color:#6b7280;font-size:.95rem}
+    .footer-copy p{margin:4px 0}
+    @media (prefers-color-scheme: dark){body{background:linear-gradient(to bottom right,var(--bg-dark-start),var(--bg-dark-end));color:var(--text-dark)}.top{background:rgba(17,24,39,.92);border-bottom-color:rgba(55,65,81,.9)}.nav-links a{color:#d1d5db}.nav-links a:hover{color:#c084fc}.hero-copy p,.feature-card p{color:var(--text-dark-muted)}.feature-card{background:var(--surface-dark);border-color:var(--border-dark)}.feature-icon.primary{background:rgba(88,28,135,.45);color:#c084fc}.feature-icon.secondary{background:rgba(20,83,45,.5);color:#86efac}.footer-copy{color:#9ca3af}.logo-light{display:none}.logo-dark{display:block}}
+    @media (max-width:900px){.hero{grid-template-columns:1fr;gap:24px}.feature-grid{grid-template-columns:1fr}.wrap{padding:24px 16px 40px}}
+  </style>
+</head>
+<body>
+  <div class="top">
+    <div class="nav">
+      <div class="brand">Guia Canindé</div>
+      <div class="nav-links">
+        <a href="/">Início</a>
+        <a href="/buscar">Buscar</a>
+      </div>
+    </div>
+  </div>
+  <div class="wrap">
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <h1>Encontre tudo em Canindé</h1>
+          <p>Conecte-se diretamente com empresas e profissionais da sua cidade. Rápido, fácil e gratuito!</p>
+          <div class="hero-actions">
+            <a class="cta cta-search" href="/buscar">O que está buscando?</a>
+            <a class="cta cta-register" href="/cadastrar">Cadastrar Meu Negócio</a>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <img class="logo-light" src="/LOGO-BG.png" onerror="this.src='/ICONETESTE.png'" alt="Guia Canindé">
+          <img class="logo-dark" src="/LOGO-BR.png" onerror="this.src='/ICONETESTE.png'" alt="Guia Canindé">
+        </div>
+      </section>
+      <section class="section">
+        <h2>Como funciona?</h2>
+        <div class="feature-grid">
+          <div class="feature-card">
+            <div class="feature-icon primary">⌕</div>
+            <p><strong>100% gratuito!</strong> Conecte-se diretamente pelo WhatsApp com empresas e profissionais.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon secondary">▣</div>
+            <p>Encontre serviços próximos a você: pizzarias, encanadores, cabeleireiros e muito mais!</p>
+          </div>
+        </div>
+      </section>
+      <div class="footer-copy">
+        <p>Encontre o que precisa em Canindé</p>
+        <p>Rápido, fácil e direto no WhatsApp</p>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
+HTML;
+    exit;
+}
+
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/';
 $base = rtrim((string)env_get('APP_BASE_PATH', ''), '/');
 $path = ($base !== '' && str_starts_with($uri, $base)) ? substr($uri, strlen($base)) : $uri;
 $path = $path === '' ? '/' : $path;
 $method = $_SERVER['REQUEST_METHOD'];
+
+if ($method === 'GET' && $path === '/') {
+    home_shell();
+}
 
 if ($method === 'GET' && $path === '/') {
     $pdo = db();
