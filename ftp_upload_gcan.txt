@@ -1,7 +1,0 @@
-open ftp.oguiacaninde.online 21
-user uog6kkjc C7mmZ51ob4
-binary
-lcd C:\xampp\htdocs\gcan
-put deploy-webroot.zip
-ls
-bye
