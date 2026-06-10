@@ -13,11 +13,11 @@ jobs:
   ftp-deploy:
     runs-on: ubuntu-latest
     env:
-      FTP_SERVER_VALUE: ${{ secrets.FTP_SERVER != '' && secrets.FTP_SERVER || secrets.FTP_HOST }}
+      FTP_SERVER_VALUE: ftp.oguiacaninde.online
       FTP_USERNAME_VALUE: ${{ secrets.FTP_USERNAME != '' && secrets.FTP_USERNAME || secrets.FTP_USER }}
       FTP_PASSWORD_VALUE: ${{ secrets.FTP_PASSWORD != '' && secrets.FTP_PASSWORD || secrets.FTP_PASS }}
       FTP_SERVER_DIR_VALUE: ${{ secrets.FTP_SERVER_DIR != '' && secrets.FTP_SERVER_DIR || secrets.FTP_REMOTE_DIR }}
-      FTP_PROTOCOL_VALUE: ${{ secrets.FTP_PROTOCOL != '' && secrets.FTP_PROTOCOL || 'ftp' }}
+      FTP_PROTOCOL_VALUE: ${{ secrets.FTP_PROTOCOL != '' && secrets.FTP_PROTOCOL || 'ftps' }}
       FTP_PORT_VALUE: ${{ secrets.FTP_PORT != '' && secrets.FTP_PORT || 21 }}
 
     steps:
