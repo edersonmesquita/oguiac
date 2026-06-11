@@ -1,16 +1,16 @@
 /**
- * Guia Canindé - App JS Principal
+ * Guia Canind&eacute; - App JS Principal
  * SPA (Single Page Application) puro sem frameworks
- * Toda navegação é feita via hash (#/rota) para funcionar em qualquer hospedagem
+ * Toda navegaÃ§Ã£o Ã© feita via hash (#/rota) para funcionar em qualquer hospedagem
  */
 
 // ============================================================
-// Configuração
+// ConfiguraÃ§Ã£o
 // ============================================================
 const API_BASE = window.API_BASE_URL || '/api';
 
 // ============================================================
-// Utilitários
+// UtilitÃ¡rios
 // ============================================================
 async function api(method, path, body = null, token = null) {
     const headers = { 'Content-Type': 'application/json' };
@@ -35,7 +35,7 @@ async function apiUpload(formData, token = null) {
     return data;
 }
 
-// Toast de notificações
+// Toast de notificaÃ§Ãµes
 function toast(msg, type = 'info') {
     const container = document.getElementById('toast-container');
     const el = document.createElement('div');
@@ -47,10 +47,10 @@ function toast(msg, type = 'info') {
 
 // Renderiza estrelas
 function renderStars(avg, total) {
-    if (!avg) return '<span style="color:var(--text-light);font-size:.8rem">Sem avaliações</span>';
+    if (!avg) return '<span style="color:var(--text-light);font-size:.8rem">Sem avalia&ccedil;&otilde;es</span>';
     let stars = '';
     for (let i = 1; i <= 5; i++) {
-        stars += `<span class="${i <= Math.round(avg) ? 'star' : 'star-empty'}">★</span>`;
+        stars += `<span class="${i <= Math.round(avg) ? 'star' : 'star-empty'}">&#9733;</span>`;
     }
     return `<div class="company-stars">${stars}<span class="rating-count">(${total})</span></div>`;
 }
@@ -64,14 +64,14 @@ function companyLogoHTML(company) {
     return `<div class="company-logo-placeholder">${company.name.charAt(0)}</div>`;
 }
 
-// Formata número de WhatsApp para link
+// Formata nÃºmero de WhatsApp para link
 function whatsappLink(number) {
     const digits = number.replace(/\D/g, '');
     const full = digits.startsWith('55') ? digits : '55' + digits;
     return `https://wa.me/${full}`;
 }
 
-// Token de autenticação
+// Token de autenticaÃ§Ã£o
 function getToken() { return localStorage.getItem('gc_token'); }
 function setToken(t) { localStorage.setItem('gc_token', t); }
 function removeToken() { localStorage.removeItem('gc_token'); localStorage.removeItem('gc_user'); }
@@ -117,7 +117,7 @@ function router() {
     } else {
         app.innerHTML = `<div class="page-section container"><div class="empty-state">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
-            <p>Página não encontrada</p>
+            <p>P&aacute;gina n&atilde;o encontrada</p>
         </div></div>`;
     }
     updateNavActive();
@@ -139,19 +139,15 @@ function renderNavbar() {
     <nav class="navbar">
       <div class="navbar-inner">
         <a href="#/" class="navbar-brand">
-          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="20" cy="20" r="18" stroke="#6B21A8" stroke-width="3"/>
-            <path d="M12 20a8 8 0 1 1 16 0" stroke="#6B21A8" stroke-width="2.5" stroke-linecap="round"/>
-            <circle cx="20" cy="20" r="3" fill="#10B981"/>
-          </svg>
-          Guia Canindé
+          <img src="/ICONETESTE.png" alt="Guia Canind&eacute;">
+          Guia Canind&eacute;
         </a>
         <ul class="navbar-links">
-          <li><a href="#/" data-route="/"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Início</span></a></li>
+          <li><a href="#/" data-route="/"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>In&iacute;cio</span></a></li>
           <li><a href="#/categorias" data-route="/categorias"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><span>Categorias</span></a></li>
           <li><a href="#/buscar" data-route="/buscar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><span>Buscar</span></a></li>
           <li><a href="#/empresa-login" data-route="/empresa-login"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Login da Empresa</span></a></li>
-          <li><a href="#/cadastrar" class="btn-cadastrar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg> Cadastrar Negócio</a></li>
+          <li><a href="#/cadastrar" class="btn-cadastrar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg> Cadastrar Neg&oacute;cio</a></li>
           <li><button class="btn-instalar" id="btn-pwa" style="display:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg> Instalar App</button></li>
         </ul>
       </div>
@@ -166,22 +162,22 @@ async function renderHome(app) {
     <div class="hero">
       <div class="hero-inner">
         <div class="hero-copy">
-          <h1>Encontre tudo em Canindé</h1>
-          <p>Conecte-se diretamente com empresas e profissionais da sua cidade. Rápido, fácil e gratuito!</p>
+          <h1>Encontre tudo em Canind&eacute;</h1>
+          <p>Conecte-se diretamente com empresas e profissionais da sua cidade. R&aacute;pido, f&aacute;cil e gratuito!</p>
           <div class="hero-btns">
             <a href="#/buscar" class="btn-hero-search">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-              O que está buscando?
+              O que est&aacute; buscando?
             </a>
             <a href="#/cadastrar" class="btn-hero-cadastrar">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/></svg>
-              Cadastrar Meu Negócio
+              Cadastrar Meu Neg&oacute;cio
             </a>
           </div>
         </div>
         <div class="hero-logo">
-          <img class="hero-logo-light" src="/LOGO-BG.png" alt="Guia Canindé" onerror="this.src='/ICONETESTE.png'">
-          <img class="hero-logo-dark" src="/LOGO-BR.png" alt="Guia Canindé" onerror="this.src='/ICONETESTE.png'">
+          <img class="hero-logo-light" src="/LOGO-BG.png" alt="Guia Canind&eacute;" onerror="this.src='/ICONETESTE.png'">
+          <img class="hero-logo-dark" src="/LOGO-BR.png" alt="Guia Canind&eacute;" onerror="this.src='/ICONETESTE.png'">
         </div>
       </div>
     </div>
@@ -194,10 +190,10 @@ async function renderHome(app) {
         </div>
         <div class="card-como">
           <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/></svg></div>
-          <p>Encontre serviços próximos a você: pizzarias, encanadores, cabeleireiros e muito mais!</p>
+          <p>Encontre servi&ccedil;os pr&oacute;ximos a voc&ecirc;: pizzarias, encanadores, cabeleireiros e muito mais!</p>
         </div>
       </div>
-      <p style="margin-top:2rem;color:var(--text-light);font-size:.9rem">Encontre o que precisa em Canindé — Rápido, fácil e direto no WhatsApp</p>
+      <p style="margin-top:2rem;color:var(--text-light);font-size:.9rem">Encontre o que precisa em Canind&eacute; - R&aacute;pido, f&aacute;cil e direto no WhatsApp</p>
     </section>`;
 }
 
@@ -268,7 +264,7 @@ async function renderBuscar(app) {
         <div class="search-full">
           <div class="search-full-wrap">
             <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            <input type="text" id="search-input" placeholder="Digite o nome da empresa ou endereço..." value="${currentSearch}">
+            <input type="text" id="search-input" placeholder="Digite o nome da empresa ou endereÃ§o..." value="${currentSearch}">
           </div>
         </div>
         <div id="companies-list"><p style="color:var(--text-light)">Carregando...</p></div>
@@ -341,15 +337,15 @@ function renderPagination(meta) {
     const pag = document.getElementById('pagination');
     if (meta.pages <= 1) { pag.innerHTML = ''; return; }
 
-    let html = `<button class="page-btn" onclick="goPage(${meta.page - 1})" ${meta.page <= 1 ? 'disabled' : ''}>‹</button>`;
+    let html = `<button class="page-btn" onclick="goPage(${meta.page - 1})" ${meta.page <= 1 ? 'disabled' : ''}>â€¹</button>`;
     for (let i = 1; i <= meta.pages; i++) {
         if (i === 1 || i === meta.pages || Math.abs(i - meta.page) <= 2) {
             html += `<button class="page-btn ${i === meta.page ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
         } else if (Math.abs(i - meta.page) === 3) {
-            html += `<span style="padding:.45rem .5rem;color:var(--text-light)">…</span>`;
+            html += `<span style="padding:.45rem .5rem;color:var(--text-light)">â€¦</span>`;
         }
     }
-    html += `<button class="page-btn" onclick="goPage(${meta.page + 1})" ${meta.page >= meta.pages ? 'disabled' : ''}>›</button>`;
+    html += `<button class="page-btn" onclick="goPage(${meta.page + 1})" ${meta.page >= meta.pages ? 'disabled' : ''}>â€º</button>`;
     pag.innerHTML = html;
 }
 
@@ -374,7 +370,7 @@ function shareCompany(name, id) {
 async function renderCadastrar(app) {
     app.innerHTML = `<div class="page-section">
       <div class="cadastro-form">
-        <h1>Cadastrar Meu Negócio</h1>
+        <h1>Cadastrar Meu Neg&oacute;cio</h1>
         <div class="form-group">
           <label>Logo da Empresa (Opcional)</label>
           <div class="logo-upload" id="logo-drop" onclick="document.getElementById('logo-file').click()">
@@ -386,11 +382,11 @@ async function renderCadastrar(app) {
         </div>
         <div class="form-group">
           <label>Nome da Empresa *</label>
-          <input type="text" id="f-name" placeholder="Ex: Padaria São José">
+          <input type="text" id="f-name" placeholder="Ex: Padaria SÃ£o JosÃ©">
         </div>
         <div class="form-group">
-          <label>Descrição (Opcional)</label>
-          <textarea id="f-desc" maxlength="300" placeholder="Descreva seu negócio em até 300 caracteres"></textarea>
+          <label>DescriÃ§Ã£o (Opcional)</label>
+          <textarea id="f-desc" maxlength="300" placeholder="Descreva seu negÃ³cio em atÃ© 300 caracteres"></textarea>
           <div class="char-count"><span id="char-count">0</span>/300 caracteres</div>
         </div>
         <div class="form-group">
@@ -403,7 +399,7 @@ async function renderCadastrar(app) {
             <input type="text" id="f-rua" placeholder="Ex: Rua Principal">
           </div>
           <div class="form-group">
-            <label>Número</label>
+            <label>NÃºmero</label>
             <input type="text" id="f-numero" placeholder="Ex: 123">
           </div>
         </div>
@@ -425,9 +421,9 @@ async function renderCadastrar(app) {
         </div>
         <div class="form-group">
           <label>Senha para acesso (Opcional)</label>
-          <input type="password" id="f-password" placeholder="Mínimo 6 caracteres">
+          <input type="password" id="f-password" placeholder="MÃ­nimo 6 caracteres">
         </div>
-        <button class="btn-submit" id="btn-cadastrar">Cadastrar Negócio</button>
+        <button class="btn-submit" id="btn-cadastrar">Cadastrar Neg&oacute;cio</button>
       </div>
     </div>`;
 
@@ -478,11 +474,11 @@ async function renderCadastrar(app) {
         const password = document.getElementById('f-password').value;
 
         if (!name || !whatsapp || !rua || !catId) {
-            toast('Preencha todos os campos obrigatórios (*)', 'error');
+            toast('Preencha todos os campos obrigatÃ³rios (*)', 'error');
             return;
         }
 
-        const address = [rua, numero, bairro, 'Canindé - CE'].filter(Boolean).join(', ');
+        const address = [rua, numero, bairro, 'CanindÃ© - CE'].filter(Boolean).join(', ');
 
         const btn = document.getElementById('btn-cadastrar');
         btn.disabled = true;
@@ -496,12 +492,12 @@ async function renderCadastrar(app) {
                 password: password || null,
                 logo: logoUrl || null,
             });
-            toast('Negócio cadastrado com sucesso! 🎉', 'success');
+            toast('NegÃ³cio cadastrado com sucesso! ðŸŽ‰', 'success');
             setTimeout(() => navigate('/buscar'), 1500);
         } catch (err) {
             toast('Erro: ' + err.message, 'error');
             btn.disabled = false;
-            btn.textContent = 'Cadastrar Negócio';
+            btn.textContent = 'Cadastrar Neg&oacute;cio';
         }
     });
 }
@@ -516,14 +512,14 @@ async function renderEmpresaLogin(app) {
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
         </div>
         <h1>Acesso para Empresas</h1>
-        <p>Faça login para acessar sua área administrativa</p>
+        <p>FaÃ§a login para acessar sua Ã¡rea administrativa</p>
         <div class="form-group" style="text-align:left">
           <label>Email</label>
           <input type="email" id="l-email" placeholder="seu@email.com">
         </div>
         <div class="form-group" style="text-align:left">
           <label>Senha</label>
-          <input type="password" id="l-senha" placeholder="••••••">
+          <input type="password" id="l-senha" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢">
         </div>
         <button class="btn-submit" id="btn-login">Entrar</button>
         <div class="divider">ou</div>
@@ -602,3 +598,4 @@ function debounce(fn, ms) {
     let t;
     return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
 }
+
