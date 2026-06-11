@@ -838,7 +838,7 @@ async function renderAdminLogin(app) {
         btn.textContent = 'Entrando...';
 
         try {
-            const res = await api('POST', '/admin/login', { username, password });
+            const res = await api('POST', '/auth/admin/login', { username, password });
             setToken(res.token);
             setUser({ role: 'admin', username });
             toast('Acesso liberado!', 'success');
@@ -867,7 +867,7 @@ async function renderAdminConfig(app) {
     }
 
     try {
-        await api('GET', '/admin/verify', null, token);
+        await api('GET', '/auth/me', null, token);
     } catch {
         removeToken();
         applySiteSettings();
@@ -875,7 +875,7 @@ async function renderAdminConfig(app) {
         return;
     }
 
-    const settings = await api('GET', '/admin/settings', null, token).catch(() => getSettings());
+    const settings = await api('GET', '/settings/admin', null, token).catch(() => getSettings());
     systemSettings = deepMerge(cloneData(DEFAULT_SETTINGS), settings || {});
     applySiteSettings();
 
@@ -987,7 +987,7 @@ async function renderAdminConfig(app) {
 
         try {
             const payload = adminSettingsPayloadFromForm();
-            const res = await api('PUT', '/admin/settings', payload, token);
+            const res = await api('PUT', '/settings', payload, token);
             systemSettings = deepMerge(cloneData(DEFAULT_SETTINGS), res.settings || payload);
             applySiteSettings();
             toast('Configurações salvas com sucesso!', 'success');
