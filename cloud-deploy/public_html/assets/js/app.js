@@ -177,6 +177,38 @@ function buildWhatsAppHref(number, message = '') {
     return `https://wa.me/${full}${query}`;
 }
 
+function companyPageUrl(companyId) {
+    return `${location.origin}${location.pathname}#/empresa?id=${encodeURIComponent(companyId)}`;
+}
+
+function companyMapUrl(company) {
+    const query = encodeURIComponent([company.name, company.address].filter(Boolean).join(' - '));
+    return `https://www.google.com/maps/search/?api=1&query=${query}`;
+}
+
+function updateMetaTag(selector, value) {
+    const el = document.querySelector(selector);
+    if (el && value) {
+        el.setAttribute('content', value);
+    }
+}
+
+function applyCompanyMeta(company) {
+    const title = `${company.name} - ${company.categoryName || 'Empresa'} | Guia Canindé`;
+    const description = company.description || company.address || `Veja a página da empresa ${company.name} no Guia Canindé.`;
+    const image = company.logo || getBrandIcon();
+
+    document.title = title;
+    updateMetaTag('meta[name="description"]', description);
+    updateMetaTag('meta[property="og:title"]', title);
+    updateMetaTag('meta[property="og:description"]', description);
+    updateMetaTag('meta[property="og:image"]', image);
+    updateMetaTag('meta[property="og:image:alt"]', company.name);
+    updateMetaTag('meta[name="twitter:title"]', title);
+    updateMetaTag('meta[name="twitter:description"]', description);
+    updateMetaTag('meta[name="twitter:image"]', image);
+}
+
 function menuIcon(iconName) {
     const icons = {
         home: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>',
@@ -270,6 +302,7 @@ const routes = {
     '/':             renderHome,
     '/categorias':   renderCategorias,
     '/buscar':       renderBuscar,
+    '/empresa':      renderEmpresaDetalhe,
     '/cadastrar':    renderCadastrar,
     '/empresa-login':renderEmpresaLogin,
     '/admin-login':  renderAdminLogin,
@@ -299,6 +332,7 @@ window.addEventListener('load', async () => {
 
 async function router() {
     await ensureSettingsLoaded();
+    applySiteSettings();
     const path = getRoute();
     const handler = routes[path];
     const app = document.getElementById('app');
@@ -507,9 +541,11 @@ function renderCompaniesList(companies) {
     }
     list.innerHTML = `<div class="companies-grid">${companies.map(c => `
         <div class="company-card">
-          ${companyLogoHTML(c)}
+          <a class="company-card-main" href="#/empresa?id=${c.id}">
+            ${companyLogoHTML(c)}
+          </a>
           <div class="company-info">
-            <div class="company-name">${c.name}</div>
+            <a class="company-name company-link" href="#/empresa?id=${c.id}">${c.name}</a>
             <div class="company-category">${c.categoryName || ''}</div>
             ${renderStars(c.avgRating, c.totalRatings)}
             <div class="company-address">
@@ -521,7 +557,7 @@ function renderCompaniesList(companies) {
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.999 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.309A9.959 9.959 0 0012 22c5.522 0 10-4.477 10-10S17.522 2 12 2z" fill-rule="evenodd" clip-rule="evenodd"/></svg>
                 WhatsApp
               </a>
-              <button class="btn-share" onclick="shareCompany('${c.name}', '${c.id}')">
+              <button class="btn-share" onclick="shareCompanyFromEncoded('${encodeURIComponent(JSON.stringify(c))}')">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
                 Compartilhar
               </button>
@@ -553,12 +589,112 @@ async function goPage(p) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function shareCompany(name, id) {
-    const url = `${location.origin}${location.pathname}#/buscar?search=${encodeURIComponent(name)}`;
+function shareCompany(company) {
+    const url = companyPageUrl(company.id);
+    const text = company.description || company.address || `Veja ${company.name} no Guia Canindé`;
     if (navigator.share) {
-        navigator.share({ title: name, url });
+        navigator.share({ title: company.name, text, url });
     } else {
         navigator.clipboard.writeText(url).then(() => toast('Link copiado!', 'success'));
+    }
+}
+
+function shareCompanyFromEncoded(encoded) {
+    shareCompany(JSON.parse(decodeURIComponent(encoded)));
+}
+
+async function renderEmpresaDetalhe(app) {
+    const query = getQuery();
+    const companyId = query.id || '';
+
+    if (!companyId) {
+        app.innerHTML = `<div class="page-section container"><div class="empty-state"><p>Empresa não informada.</p></div></div>`;
+        return;
+    }
+
+    app.innerHTML = `<div class="page-section container"><p style="color:var(--text-light)">Carregando empresa...</p></div>`;
+
+    try {
+        const company = await api('GET', `/companies/${companyId}`);
+        applyCompanyMeta(company);
+
+        const logo = company.logo || getBrandIcon();
+        const shareUrl = companyPageUrl(company.id);
+        const shareText = company.description || company.address || `Veja ${company.name} no Guia Canindé`;
+        const socialLinks = [
+            company.instagram ? `<a class="company-social-link" href="${company.instagram.startsWith('http') ? company.instagram : `https://instagram.com/${company.instagram.replace(/^@/, '')}`}" target="_blank" rel="noopener"><span>Instagram</span><strong>Seguir no Instagram</strong></a>` : '',
+            company.facebook ? `<a class="company-social-link" href="${company.facebook.startsWith('http') ? company.facebook : `https://facebook.com/${company.facebook.replace(/^@/, '')}`}" target="_blank" rel="noopener"><span>Facebook</span><strong>Abrir página no Facebook</strong></a>` : '',
+            company.website ? `<a class="company-social-link" href="${company.website.startsWith('http') ? company.website : `https://${company.website}`}" target="_blank" rel="noopener"><span>Website</span><strong>Visitar site oficial</strong></a>` : '',
+            company.youtube ? `<a class="company-social-link" href="${company.youtube.startsWith('http') ? company.youtube : `https://${company.youtube}`}" target="_blank" rel="noopener"><span>YouTube</span><strong>Assistir no YouTube</strong></a>` : '',
+        ].filter(Boolean).join('');
+
+        app.innerHTML = `
+        <section class="company-page-shell">
+          <div class="company-page-card">
+            <a class="company-back-link" href="#/buscar?search=${encodeURIComponent(company.name)}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+              Voltar para resultados
+            </a>
+
+            <div class="company-hero-band"></div>
+
+            <div class="company-profile">
+              <div class="company-profile-logo-wrap">
+                <img class="company-profile-logo" src="${logo}" alt="${company.name}" onerror="this.src='${getBrandIcon()}'">
+              </div>
+
+              <div class="company-profile-main">
+                <div class="company-profile-grid">
+                  <div class="company-profile-copy">
+                    <h1>${company.name}</h1>
+                    <p class="company-profile-category">${company.categoryName || 'Empresa cadastrada'}</p>
+                    <p class="company-profile-description">${company.description || 'Conecte-se com esta empresa diretamente pelo WhatsApp e veja suas informações completas.'}</p>
+
+                    <div class="company-profile-rating">
+                      ${renderStars(company.avgRating, company.totalRatings)}
+                      <span>${company.totalRatings ? `${company.totalRatings} avaliação${company.totalRatings > 1 ? 'es' : ''}` : 'Sem avaliações ainda'}</span>
+                    </div>
+                  </div>
+
+                  <div class="company-profile-actions">
+                    <button class="btn-share" onclick="navigator.clipboard.writeText('${company.whatsapp || ''}').then(() => toast('Número copiado!', 'success'))">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                      Copiar Número
+                    </button>
+                    <button class="btn-share" onclick="shareCompanyFromEncoded('${encodeURIComponent(JSON.stringify(company))}')">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                      Compartilhar
+                    </button>
+                    <a class="btn-share btn-share-whatsapp" href="${buildWhatsAppHref(company.whatsapp, `${shareText} ${shareUrl}`)}" target="_blank" rel="noopener">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.999 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.309A9.959 9.959 0 0012 22c5.522 0 10-4.477 10-10S17.522 2 12 2z"/></svg>
+                      Postar em Grupo
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="company-section-card">
+              <div class="company-section-heading">Localização</div>
+              <div class="company-location-row">
+                <div class="company-location-copy">
+                  <span>Endereço</span>
+                  <strong>${company.address}</strong>
+                </div>
+                <a class="company-map-link" href="${companyMapUrl(company)}" target="_blank" rel="noopener">Ver no Maps</a>
+              </div>
+            </div>
+
+            <a class="company-primary-whatsapp" href="${whatsappLink(company.whatsapp)}" target="_blank" rel="noopener">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.999 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.309A9.959 9.959 0 0012 22c5.522 0 10-4.477 10-10S17.522 2 12 2z"/></svg>
+              WhatsApp
+            </a>
+
+            ${socialLinks ? `<div class="company-social-grid">${socialLinks}</div>` : ''}
+          </div>
+        </section>`;
+    } catch (err) {
+        app.innerHTML = `<div class="page-section container"><div class="empty-state"><p>${err.message}</p></div></div>`;
     }
 }
 
