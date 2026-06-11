@@ -334,10 +334,12 @@ textarea {
     gap: .75rem;
     margin-bottom: 2rem;
     flex-wrap: wrap;
+    width: 100%;
 }
 .search-full input {
     flex: 1;
     min-width: 200px;
+    width: 100%;
     padding: .7rem 1rem .7rem 2.5rem;
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -345,7 +347,7 @@ textarea {
     outline: none;
 }
 .search-full input:focus { border-color: var(--primary); }
-.search-full-wrap { position: relative; flex: 1; min-width: 0; }
+.search-full-wrap { position: relative; flex: 1 1 100%; min-width: 0; width: 100%; }
 .search-full-wrap .search-icon {
     position: absolute;
     left: .75rem;
