@@ -102,6 +102,22 @@ async function api(method, path, body = null) {
     return data;
 }
 
+async function apiUpload(formData) {
+    const headers = {};
+    const token = Auth.getToken();
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const res = await fetch(`${API}/companies/upload-logo`, {
+        method: 'POST',
+        headers,
+        body: formData,
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || data.message || 'Erro no upload');
+    return data;
+}
+
 // ============================================================
 // Toast
 // ============================================================
@@ -486,6 +502,12 @@ async function editEmpresa(id) {
 
         openModal(`
         <div class="modal-header"><h2>Editar Empresa</h2><button class="modal-close" onclick="closeModal()">×</button></div>
+        <div class="form-group">
+          <label>Adicionar ou alterar foto da empresa</label>
+          <input type="file" id="e-logo-file" accept="image/*">
+          <small style="display:block;color:var(--text-light);font-size:.78rem;margin-top:.35rem">JPG, PNG, WebP ou GIF até 2MB</small>
+          <div id="e-logo-preview" style="margin-top:.75rem">${data.logo ? `<img src="${data.logo}" alt="${data.name}" style="width:88px;height:88px;object-fit:cover;border-radius:12px;border:1px solid var(--border)">` : '<span style="color:var(--text-light);font-size:.82rem">Empresa sem foto/logo cadastrada.</span>'}</div>
+        </div>
         <div class="form-group"><label>Nome</label><input type="text" id="e-name" value="${data.name}"></div>
         <div class="form-group"><label>WhatsApp</label><input type="text" id="e-whatsapp" value="${data.whatsapp}"></div>
         <div class="form-group"><label>Endereço</label><input type="text" id="e-address" value="${data.address}"></div>
@@ -495,10 +517,35 @@ async function editEmpresa(id) {
           <div class="form-group"><label>Email</label><input type="email" id="e-email" value="${data.email || ''}"></div>
           <div class="form-group"><label>Instagram</label><input type="text" id="e-instagram" value="${data.instagram || ''}"></div>
         </div>
+        <div class="form-row">
+          <div class="form-group"><label>Facebook</label><input type="text" id="e-facebook" value="${data.facebook || ''}"></div>
+          <div class="form-group"><label>YouTube</label><input type="text" id="e-youtube" value="${data.youtube || ''}"></div>
+        </div>
+        <div class="form-group"><label>Site / Link de pedidos</label><input type="text" id="e-website" value="${data.website || ''}"></div>
         <div class="modal-footer">
           <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
           <button class="btn-save" onclick="saveEmpresa('${id}')">Salvar</button>
         </div>`);
+
+        const fileInput = document.getElementById('e-logo-file');
+        fileInput.dataset.logoUrl = data.logo || '';
+        fileInput.addEventListener('change', async e => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const preview = document.getElementById('e-logo-preview');
+            preview.innerHTML = `<img src="${URL.createObjectURL(file)}" alt="Preview" style="width:88px;height:88px;object-fit:cover;border-radius:12px;border:1px solid var(--border)">`;
+
+            try {
+                const fd = new FormData();
+                fd.append('logo', file);
+                const res = await apiUpload(fd);
+                fileInput.dataset.logoUrl = res.url || '';
+                toast('Foto/logo enviada com sucesso!', 'success');
+            } catch (err) {
+                toast(err.message, 'error');
+            }
+        });
     } catch (e) { toast(e.message, 'error'); }
 }
 
@@ -514,6 +561,10 @@ async function saveEmpresa(id) {
             description: document.getElementById('e-desc').value || null,
             email:       document.getElementById('e-email').value || null,
             instagram:   document.getElementById('e-instagram').value || null,
+            facebook:    document.getElementById('e-facebook').value || null,
+            youtube:     document.getElementById('e-youtube').value || null,
+            website:     document.getElementById('e-website').value || null,
+            logo:        document.getElementById('e-logo-file').dataset.logoUrl || null,
         });
         toast('Empresa atualizada!', 'success');
         closeModal();

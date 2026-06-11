@@ -891,15 +891,15 @@ async function renderCadastrar(app) {
     app.innerHTML = `<div class="page-section">
       <div class="cadastro-form">
         <h1>Cadastrar Meu Neg&oacute;cio</h1>
-        <div class="form-group">
-          <label>Foto ou Logo da Empresa (Opcional)</label>
-          <div class="logo-upload" id="logo-drop" onclick="document.getElementById('logo-file').click()">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--text-light);margin:0 auto;display:block"><path d="M12 4v16m8-8H4"/></svg>
-            <p>Clique para adicionar foto ou logo</p>
-            <small class="logo-help">Formatos aceitos: JPG, PNG, WebP ou GIF at&eacute; 2MB</small>
-            <div id="logo-preview"></div>
-          </div>
-          <input type="file" id="logo-file" accept="image/*" style="display:none">
+          <div class="form-group">
+            <label>Adicionar ou alterar foto da empresa (Opcional)</label>
+            <div class="logo-upload" id="logo-drop" onclick="document.getElementById('logo-file').click()">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--text-light);margin:0 auto;display:block"><path d="M12 4v16m8-8H4"/></svg>
+              <p>Clique para adicionar ou trocar a foto/logo</p>
+              <small class="logo-help">Formatos aceitos: JPG, PNG, WebP ou GIF at&eacute; 2MB</small>
+              <div id="logo-preview"></div>
+            </div>
+            <input type="file" id="logo-file" accept="image/*" style="display:none">
         </div>
         <div class="form-group">
           <label>Nome da Empresa *</label>
@@ -936,14 +936,34 @@ async function renderCadastrar(app) {
             </select>
           </div>
         </div>
-        <div class="form-group">
-          <label>Email (Opcional)</label>
-          <input type="email" id="f-email" placeholder="contato@empresa.com">
-        </div>
-        <div class="form-group">
-          <label>Senha para acesso (Opcional)</label>
-          <input type="password" id="f-password" placeholder="M&iacute;nimo 6 caracteres">
-        </div>
+          <div class="form-group">
+            <label>Email (Opcional)</label>
+            <input type="email" id="f-email" placeholder="contato@empresa.com">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Instagram (Opcional)</label>
+              <input type="text" id="f-instagram" placeholder="@suaempresa">
+            </div>
+            <div class="form-group">
+              <label>Facebook (Opcional)</label>
+              <input type="text" id="f-facebook" placeholder="https://facebook.com/suaempresa">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>YouTube (Opcional)</label>
+              <input type="text" id="f-youtube" placeholder="https://youtube.com/@canal">
+            </div>
+            <div class="form-group">
+              <label>Site / Link de pedidos (Opcional)</label>
+              <input type="text" id="f-website" placeholder="https://seudominio.com.br">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Senha para acesso (Opcional)</label>
+            <input type="password" id="f-password" placeholder="M&iacute;nimo 6 caracteres">
+          </div>
         <button class="btn-submit" id="btn-cadastrar">Cadastrar Neg&oacute;cio</button>
       </div>
     </div>`;
@@ -992,6 +1012,10 @@ async function renderCadastrar(app) {
         const catId    = document.getElementById('f-category').value;
         const desc     = document.getElementById('f-desc').value.trim();
         const email    = document.getElementById('f-email').value.trim();
+        const instagram = document.getElementById('f-instagram').value.trim();
+        const facebook = document.getElementById('f-facebook').value.trim();
+        const youtube = document.getElementById('f-youtube').value.trim();
+        const website = document.getElementById('f-website').value.trim();
         const password = document.getElementById('f-password').value;
 
         if (!name || !whatsapp || !rua || !catId) {
@@ -1010,6 +1034,10 @@ async function renderCadastrar(app) {
                 name, whatsapp, address, categoryId: catId,
                 description: desc || null,
                 email: email || null,
+                instagram: instagram || null,
+                facebook: facebook || null,
+                youtube: youtube || null,
+                website: website || null,
                 password: password || null,
                 logo: logoUrl || null,
             });
