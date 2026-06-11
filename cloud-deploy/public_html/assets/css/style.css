@@ -1,11 +1,11 @@
 /* ============================================================
-   Guia CanindÃ© - Estilos Principais
+   Guia Caninde - Estilos Principais
    Cores e identidade visual preservadas do original Next.js
    ============================================================ */
 
 :root {
     --primary:       #6B21A8;   /* roxo escuro principal */
-    --primary-light: #7C3AED;   /* roxo mÃ©dio */
+    --primary-light: #7C3AED;   /* roxo medio */
     --primary-bg:    #F3E8FF;   /* fundo roxo suave */
     --accent:        #10B981;   /* verde cadastrar */
     --accent-dark:   #059669;
@@ -25,10 +25,17 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background: var(--white);
     color: var(--text);
     line-height: 1.5;
+}
+
+input,
+button,
+select,
+textarea {
+    font: inherit;
 }
 
 /* ---- NAVBAR ---- */
@@ -541,7 +548,7 @@ body {
 }
 .btn-voltar:hover { border-color: var(--primary); color: var(--primary); }
 
-/* ---- BOTÃƒO WHATSAPP FLUTUANTE ---- */
+/* ---- BOTAO WHATSAPP FLUTUANTE ---- */
 .whatsapp-float {
     position: fixed;
     bottom: 1.5rem;

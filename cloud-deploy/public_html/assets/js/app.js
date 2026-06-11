@@ -1,16 +1,16 @@
 /**
  * Guia Canind&eacute; - App JS Principal
  * SPA (Single Page Application) puro sem frameworks
- * Toda navegaÃ§Ã£o Ã© feita via hash (#/rota) para funcionar em qualquer hospedagem
+ * Toda navegacao e feita via hash (#/rota) para funcionar em qualquer hospedagem
  */
 
 // ============================================================
-// ConfiguraÃ§Ã£o
+// Configuracao
 // ============================================================
 const API_BASE = window.API_BASE_URL || '/api';
 
 // ============================================================
-// UtilitÃ¡rios
+// Utilitarios
 // ============================================================
 async function api(method, path, body = null, token = null) {
     const headers = { 'Content-Type': 'application/json' };
@@ -35,7 +35,7 @@ async function apiUpload(formData, token = null) {
     return data;
 }
 
-// Toast de notificaÃ§Ãµes
+// Toast de notificacoes
 function toast(msg, type = 'info') {
     const container = document.getElementById('toast-container');
     const el = document.createElement('div');
@@ -64,14 +64,14 @@ function companyLogoHTML(company) {
     return `<div class="company-logo-placeholder">${company.name.charAt(0)}</div>`;
 }
 
-// Formata nÃºmero de WhatsApp para link
+// Formata numero de WhatsApp para link
 function whatsappLink(number) {
     const digits = number.replace(/\D/g, '');
     const full = digits.startsWith('55') ? digits : '55' + digits;
     return `https://wa.me/${full}`;
 }
 
-// Token de autenticaÃ§Ã£o
+// Token de autenticacao
 function getToken() { return localStorage.getItem('gc_token'); }
 function setToken(t) { localStorage.setItem('gc_token', t); }
 function removeToken() { localStorage.removeItem('gc_token'); localStorage.removeItem('gc_user'); }
@@ -264,7 +264,7 @@ async function renderBuscar(app) {
         <div class="search-full">
           <div class="search-full-wrap">
             <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            <input type="text" id="search-input" placeholder="Digite o nome da empresa ou endereÃ§o..." value="${currentSearch}">
+            <input type="text" id="search-input" placeholder="Digite o nome da empresa ou endere&ccedil;o..." value="${currentSearch}">
           </div>
         </div>
         <div id="companies-list"><p style="color:var(--text-light)">Carregando...</p></div>
@@ -337,15 +337,15 @@ function renderPagination(meta) {
     const pag = document.getElementById('pagination');
     if (meta.pages <= 1) { pag.innerHTML = ''; return; }
 
-    let html = `<button class="page-btn" onclick="goPage(${meta.page - 1})" ${meta.page <= 1 ? 'disabled' : ''}>â€¹</button>`;
+    let html = `<button class="page-btn" onclick="goPage(${meta.page - 1})" ${meta.page <= 1 ? 'disabled' : ''}>&lsaquo;</button>`;
     for (let i = 1; i <= meta.pages; i++) {
         if (i === 1 || i === meta.pages || Math.abs(i - meta.page) <= 2) {
             html += `<button class="page-btn ${i === meta.page ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
         } else if (Math.abs(i - meta.page) === 3) {
-            html += `<span style="padding:.45rem .5rem;color:var(--text-light)">â€¦</span>`;
+            html += `<span style="padding:.45rem .5rem;color:var(--text-light)">&hellip;</span>`;
         }
     }
-    html += `<button class="page-btn" onclick="goPage(${meta.page + 1})" ${meta.page >= meta.pages ? 'disabled' : ''}>â€º</button>`;
+    html += `<button class="page-btn" onclick="goPage(${meta.page + 1})" ${meta.page >= meta.pages ? 'disabled' : ''}>&rsaquo;</button>`;
     pag.innerHTML = html;
 }
 
@@ -382,11 +382,11 @@ async function renderCadastrar(app) {
         </div>
         <div class="form-group">
           <label>Nome da Empresa *</label>
-          <input type="text" id="f-name" placeholder="Ex: Padaria SÃ£o JosÃ©">
+          <input type="text" id="f-name" placeholder="Ex: Padaria S&atilde;o Jos&eacute;">
         </div>
         <div class="form-group">
-          <label>DescriÃ§Ã£o (Opcional)</label>
-          <textarea id="f-desc" maxlength="300" placeholder="Descreva seu negÃ³cio em atÃ© 300 caracteres"></textarea>
+          <label>Descri&ccedil;&atilde;o (Opcional)</label>
+          <textarea id="f-desc" maxlength="300" placeholder="Descreva seu neg&oacute;cio em at&eacute; 300 caracteres"></textarea>
           <div class="char-count"><span id="char-count">0</span>/300 caracteres</div>
         </div>
         <div class="form-group">
@@ -399,7 +399,7 @@ async function renderCadastrar(app) {
             <input type="text" id="f-rua" placeholder="Ex: Rua Principal">
           </div>
           <div class="form-group">
-            <label>NÃºmero</label>
+            <label>N&uacute;mero</label>
             <input type="text" id="f-numero" placeholder="Ex: 123">
           </div>
         </div>
@@ -421,7 +421,7 @@ async function renderCadastrar(app) {
         </div>
         <div class="form-group">
           <label>Senha para acesso (Opcional)</label>
-          <input type="password" id="f-password" placeholder="MÃ­nimo 6 caracteres">
+          <input type="password" id="f-password" placeholder="M&iacute;nimo 6 caracteres">
         </div>
         <button class="btn-submit" id="btn-cadastrar">Cadastrar Neg&oacute;cio</button>
       </div>
@@ -474,11 +474,11 @@ async function renderCadastrar(app) {
         const password = document.getElementById('f-password').value;
 
         if (!name || !whatsapp || !rua || !catId) {
-            toast('Preencha todos os campos obrigatÃ³rios (*)', 'error');
+            toast('Preencha todos os campos obrigat&oacute;rios (*)', 'error');
             return;
         }
 
-        const address = [rua, numero, bairro, 'CanindÃ© - CE'].filter(Boolean).join(', ');
+        const address = [rua, numero, bairro, 'Canind&eacute; - CE'].filter(Boolean).join(', ');
 
         const btn = document.getElementById('btn-cadastrar');
         btn.disabled = true;
@@ -492,7 +492,7 @@ async function renderCadastrar(app) {
                 password: password || null,
                 logo: logoUrl || null,
             });
-            toast('NegÃ³cio cadastrado com sucesso! ðŸŽ‰', 'success');
+            toast('Neg&oacute;cio cadastrado com sucesso!', 'success');
             setTimeout(() => navigate('/buscar'), 1500);
         } catch (err) {
             toast('Erro: ' + err.message, 'error');
@@ -512,14 +512,14 @@ async function renderEmpresaLogin(app) {
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
         </div>
         <h1>Acesso para Empresas</h1>
-        <p>FaÃ§a login para acessar sua Ã¡rea administrativa</p>
+        <p>Fa&ccedil;a login para acessar sua &aacute;rea administrativa</p>
         <div class="form-group" style="text-align:left">
           <label>Email</label>
           <input type="email" id="l-email" placeholder="seu@email.com">
         </div>
         <div class="form-group" style="text-align:left">
           <label>Senha</label>
-          <input type="password" id="l-senha" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢">
+          <input type="password" id="l-senha" placeholder="••••••">
         </div>
         <button class="btn-submit" id="btn-login">Entrar</button>
         <div class="divider">ou</div>
