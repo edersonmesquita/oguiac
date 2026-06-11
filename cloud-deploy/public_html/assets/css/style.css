@@ -683,18 +683,123 @@ html.dark .card-como:nth-child(2) .icon { background: rgba(20,83,45,.5); }
 
 /* ---- RESPONSIVO ---- */
 @media (max-width: 768px) {
-    .hero-inner { grid-template-columns: 1fr; text-align: center; }
-    .hero h1 { font-size: 2.2rem; }
-    .hero-btns { justify-content: center; }
+    .navbar {
+        padding: 0 1rem;
+    }
+    .navbar-inner {
+        height: auto;
+        min-height: 64px;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: .75rem 1rem;
+        padding: .75rem 0;
+    }
+    .navbar-brand {
+        width: 100%;
+        justify-content: center;
+    }
+    .navbar-links {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: .75rem;
+        margin-left: 0;
+    }
+    .hero {
+        padding: 2.5rem 1rem 2rem;
+    }
+    .hero-inner {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 2rem;
+    }
+    .hero-copy {
+        max-width: 100%;
+        order: 2;
+    }
+    .hero-logo {
+        order: 1;
+        max-width: 18rem;
+        aspect-ratio: 1 / 1;
+    }
+    .hero h1 {
+        font-size: 2.2rem;
+        line-height: 1.08;
+        margin-bottom: 1rem;
+    }
+    .hero p {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+    .hero-btns {
+        justify-content: center;
+        flex-direction: column;
+        align-items: stretch;
+        gap: .75rem;
+    }
+    .btn-hero-search,
+    .btn-hero-cadastrar {
+        width: 100%;
+        padding: 1rem 1.25rem;
+        border-radius: 1rem;
+    }
+    .como-funciona {
+        padding: 3rem 1rem;
+    }
+    .como-funciona h2 {
+        margin-bottom: 1.75rem;
+    }
     .categories-grid { grid-template-columns: repeat(2, 1fr); }
     .companies-grid { grid-template-columns: 1fr; }
-    .cards-como { grid-template-columns: 1fr; }
+    .cards-como {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    .card-como {
+        padding: 1.5rem;
+        border-radius: 1.25rem;
+    }
     .form-row { grid-template-columns: 1fr; }
-    .navbar-links { gap: .75rem; }
     .navbar-links .btn-instalar { display: none; }
 }
 @media (max-width: 480px) {
-    .categories-grid { grid-template-columns: 1fr; }
+    .navbar {
+        padding: 0 .75rem;
+    }
+    .navbar-brand {
+        font-size: 1rem;
+    }
+    .navbar-links {
+        gap: .5rem;
+    }
+    .navbar-links a {
+        padding: .5rem .65rem;
+        border-radius: .85rem;
+        background: rgba(124, 58, 237, .08);
+    }
     .navbar-links a span { display: none; }
+    .btn-cadastrar {
+        padding: .65rem .85rem;
+    }
+    .hero {
+        padding: 2rem .75rem 1.5rem;
+    }
+    .hero h1 {
+        font-size: 1.9rem;
+    }
+    .hero-logo {
+        max-width: 14rem;
+    }
+    .hero-logo img {
+        padding: .5rem;
+    }
+    .como-funciona {
+        padding: 2.5rem .75rem;
+    }
+    .card-como {
+        padding: 1.25rem;
+    }
+    .categories-grid { grid-template-columns: 1fr; }
 }
 
