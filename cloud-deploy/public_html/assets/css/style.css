@@ -551,6 +551,7 @@ textarea {
     font-size: clamp(1.9rem, 4vw, 2.35rem);
     line-height: 1.05;
     margin-bottom: .35rem;
+    color: var(--text);
 }
 .company-profile-category {
     color: var(--text-light);
@@ -1106,6 +1107,20 @@ html.dark .company-map-link,
 html.dark .company-social-link strong,
 html.dark .company-link {
     color: #F8FAFC;
+}
+html.dark .company-page-card .company-profile-copy h1,
+html.dark .company-page-card .company-section-heading,
+html.dark .company-page-card .company-primary-whatsapp,
+html.dark .company-page-card .btn-share {
+    color: #F8FAFC;
+}
+html.dark .company-page-card .btn-share {
+    background: #182132;
+    border-color: rgba(148, 163, 184, .24);
+}
+html.dark .company-page-card .btn-share svg,
+html.dark .company-page-card .company-back-link svg {
+    color: #CBD5E1;
 }
 html.dark .company-map-link:hover,
 html.dark .company-link:hover,
