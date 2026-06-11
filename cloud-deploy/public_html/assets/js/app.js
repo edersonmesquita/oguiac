@@ -391,10 +391,6 @@ function renderNavbar() {
     const settings = getSettings();
     const branding = settings.branding || {};
     const menuItems = (settings.navigation?.menuItems || DEFAULT_SETTINGS.navigation.menuItems).filter(item => item && item.visible !== false);
-    const isAdminSession = getUser()?.role === 'admin';
-    const adminLink = isAdminSession
-        ? `<li><a href="#/admin-config" data-route="/admin-config">${menuIcon('settings')}<span>Painel Admin</span></a></li>`
-        : `<li><a href="#/admin-login" data-route="/admin-login">${menuIcon('settings')}<span>Admin</span></a></li>`;
 
     return `
     <nav class="navbar">
@@ -405,7 +401,6 @@ function renderNavbar() {
         </a>
         <ul class="navbar-links">
           ${menuItems.map(renderNavLink).join('')}
-          ${adminLink}
           <li><button class="btn-instalar" id="btn-pwa" style="display:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg> Instalar App</button></li>
         </ul>
       </div>
