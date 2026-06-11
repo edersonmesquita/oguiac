@@ -561,17 +561,71 @@ async function renderEmpresaLogin(app) {
 // PWA Install
 // ============================================================
 let deferredPrompt;
+const THEME_COLORS = {
+    light: '#4f46e5',
+    dark: '#182132'
+};
+
+function setInstallButtonsVisible(visible) {
+    ['btn-pwa', 'btn-pwa-mobile'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = visible ? 'flex' : 'none';
+    });
+}
+
+function isStandaloneMode() {
+    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
+function isIosDevice() {
+    return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+}
+
+function updateThemeColorMeta() {
+    const meta = document.getElementById('theme-color-meta');
+    if (!meta) return;
+    const dark = document.documentElement.classList.contains('dark');
+    meta.setAttribute('content', dark ? THEME_COLORS.dark : THEME_COLORS.light);
+}
+
+function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+    }
+}
+
+function syncInstallUi() {
+    const shouldShow = !isStandaloneMode() && (Boolean(deferredPrompt) || isIosDevice());
+    setInstallButtonsVisible(shouldShow);
+}
+
 window.addEventListener('beforeinstallprompt', e => {
     e.preventDefault();
     deferredPrompt = e;
-    const btn = document.getElementById('btn-pwa');
-    if (btn) btn.style.display = 'flex';
+    syncInstallUi();
+});
+
+window.addEventListener('appinstalled', () => {
+    deferredPrompt = null;
+    syncInstallUi();
 });
 
 document.addEventListener('click', e => {
-    if (e.target.closest('#btn-pwa') && deferredPrompt) {
+    if (!(e.target.closest('#btn-pwa') || e.target.closest('#btn-pwa-mobile'))) return;
+
+    if (deferredPrompt) {
         deferredPrompt.prompt();
-        deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+        deferredPrompt.userChoice.then(() => {
+            deferredPrompt = null;
+            syncInstallUi();
+        });
+        return;
+    }
+
+    if (isIosDevice() && !isStandaloneMode()) {
+        toast('No iPhone/iPad, use Compartilhar > Adicionar a Tela de Inicio.', 'info');
     }
 });
 
@@ -581,13 +635,17 @@ document.addEventListener('click', e => {
 function initDarkMode() {
     const saved = localStorage.getItem('gc_dark');
     if (saved === '1') document.documentElement.classList.add('dark');
+    updateThemeColorMeta();
 }
 initDarkMode();
+registerServiceWorker();
+syncInstallUi();
 
 document.addEventListener('click', e => {
     if (e.target.closest('#dark-toggle')) {
         const isDark = document.documentElement.classList.toggle('dark');
         localStorage.setItem('gc_dark', isDark ? '1' : '0');
+        updateThemeColorMeta();
     }
 });
 

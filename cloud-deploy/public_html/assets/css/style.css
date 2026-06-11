@@ -113,6 +113,31 @@ textarea {
     text-decoration: none;
 }
 .btn-instalar:hover { background: var(--primary-light); }
+.pwa-install-mobile {
+    position: fixed;
+    right: 1rem;
+    bottom: 5.5rem;
+    z-index: 120;
+    border: none;
+    border-radius: 999px;
+    padding: .9rem 1.1rem;
+    background: linear-gradient(90deg, #8B5CF6, #7C3AED);
+    color: #FFFFFF;
+    font-size: .9rem;
+    font-weight: 700;
+    display: none;
+    align-items: center;
+    gap: .55rem;
+    box-shadow: 0 18px 40px rgba(124, 58, 237, .28);
+    cursor: pointer;
+}
+.pwa-install-mobile svg {
+    width: 18px;
+    height: 18px;
+}
+.pwa-install-mobile:hover {
+    transform: translateY(-2px);
+}
 
 /* ---- HERO ---- */
 .hero {
@@ -706,10 +731,15 @@ html.dark .navbar-links a.active {
 }
 html.dark .btn-cadastrar,
 html.dark .btn-instalar,
+.pwa-install-mobile,
 html.dark .btn-hero-search,
 html.dark .btn-hero-cadastrar,
 html.dark .btn-whatsapp {
     color: #FFFFFF !important;
+}
+html.dark .pwa-install-mobile {
+    background: linear-gradient(90deg, #9333EA, #7C3AED);
+    box-shadow: 0 18px 40px rgba(91, 33, 182, .35);
 }
 html.dark .page-btn,
 html.dark .btn-share,
@@ -852,6 +882,10 @@ html.dark .card-como p strong { color: #C084FC; }
     }
     .form-row { grid-template-columns: 1fr; }
     .navbar-links .btn-instalar { display: none; }
+    .pwa-install-mobile {
+        right: 1rem;
+        bottom: 5.25rem;
+    }
 }
 @media (max-width: 480px) {
     .container,
@@ -919,5 +953,12 @@ html.dark .card-como p strong { color: #C084FC; }
         line-height: 1.35;
     }
     .categories-grid { grid-template-columns: 1fr; }
+    .pwa-install-mobile {
+        right: .75rem;
+        left: .75rem;
+        bottom: 5rem;
+        justify-content: center;
+        border-radius: 1rem;
+    }
 }
 
