@@ -647,8 +647,8 @@ footer {
 
 .dark body,
 html.dark body {
-    background: linear-gradient(135deg, #111827 0%, #1F2937 100%);
-    color: #F3F4F6;
+    background: #182132;
+    color: #F8FAFC;
 }
 html.dark .navbar,
 html.dark .card-como,
@@ -656,8 +656,27 @@ html.dark .login-card,
 html.dark .company-card,
 html.dark .category-card,
 html.dark .dark-toggle {
-    background: #1F2937;
-    border-color: #374151;
+    background: #253042;
+    border-color: rgba(148, 163, 184, .12);
+}
+html.dark .hero,
+html.dark .como-funciona {
+    background: #182132;
+}
+html.dark .navbar-brand,
+html.dark .company-name,
+html.dark .page-title,
+html.dark .login-card h1,
+html.dark .card-como p,
+html.dark .buscar-title {
+    color: #F8FAFC;
+}
+html.dark .hero h1,
+html.dark .como-funciona h2 {
+    background: linear-gradient(90deg, #9333EA 0%, #60A5FA 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
 }
 html.dark .navbar-links a,
 html.dark .company-category,
@@ -669,7 +688,22 @@ html.dark footer,
 html.dark .empty-state,
 html.dark .page-btn,
 html.dark .cat-count {
-    color: #D1D5DB;
+    color: #CBD5E1;
+}
+html.dark footer {
+    border-top-color: transparent;
+    color: #A8B6C9;
+}
+html.dark .navbar-links a:hover,
+html.dark .navbar-links a.active {
+    color: #F8FAFC;
+}
+html.dark .btn-cadastrar,
+html.dark .btn-instalar,
+html.dark .btn-hero-search,
+html.dark .btn-hero-cadastrar,
+html.dark .btn-whatsapp {
+    color: #FFFFFF !important;
 }
 html.dark .page-btn,
 html.dark .btn-share,
@@ -679,14 +713,24 @@ html.dark .search-full input,
 html.dark .form-group input,
 html.dark .form-group select,
 html.dark .form-group textarea {
-    background: #111827;
-    color: #F3F4F6;
-    border-color: #4B5563;
+    background: #182132;
+    color: #F8FAFC;
+    border-color: rgba(148, 163, 184, .22);
+}
+html.dark .btn-share,
+html.dark .btn-voltar,
+html.dark .page-btn {
+    background: #182132;
+}
+html.dark .empty-state svg,
+html.dark .dark-toggle svg {
+    color: #A8B6C9;
 }
 html.dark .hero-logo-light { display: none; }
 html.dark .hero-logo-dark { display: block; }
-html.dark .card-como .icon { background: rgba(88,28,135,.45); }
-html.dark .card-como:nth-child(2) .icon { background: rgba(20,83,45,.5); }
+html.dark .card-como .icon { background: rgba(88, 28, 135, .4); }
+html.dark .card-como:nth-child(2) .icon { background: rgba(22, 163, 74, .18); }
+html.dark .card-como p strong { color: #C084FC; }
 
 /* ---- RESPONSIVO ---- */
 @media (max-width: 768px) {
