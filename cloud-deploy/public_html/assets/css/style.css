@@ -223,6 +223,8 @@ textarea {
     padding: 2rem;
     box-shadow: 0 10px 30px rgba(15,23,42,.08);
     text-align: center;
+    min-width: 0;
+    overflow: hidden;
 }
 .card-como .icon {
     width: 48px;
@@ -343,7 +345,7 @@ textarea {
     outline: none;
 }
 .search-full input:focus { border-color: var(--primary); }
-.search-full-wrap { position: relative; flex: 1; }
+.search-full-wrap { position: relative; flex: 1; min-width: 0; }
 .search-full-wrap .search-icon {
     position: absolute;
     left: .75rem;
@@ -368,6 +370,8 @@ textarea {
     gap: 1rem;
     align-items: flex-start;
     transition: box-shadow .2s;
+    min-width: 0;
+    overflow: hidden;
 }
 .company-card:hover { box-shadow: var(--shadow-md); }
 .company-logo {
@@ -734,6 +738,11 @@ html.dark .card-como p strong { color: #C084FC; }
 
 /* ---- RESPONSIVO ---- */
 @media (max-width: 768px) {
+    .container,
+    .page-section {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
     .navbar {
         padding: 0 1rem;
     }
@@ -755,7 +764,9 @@ html.dark .card-como p strong { color: #C084FC; }
         flex-wrap: wrap;
         gap: .75rem;
         margin-left: 0;
+        min-width: 0;
     }
+    .navbar-links li { min-width: 0; }
     .hero {
         padding: 2.5rem 1rem 2rem;
     }
@@ -772,6 +783,7 @@ html.dark .card-como p strong { color: #C084FC; }
         order: 1;
         max-width: 18rem;
         aspect-ratio: 1 / 1;
+        width: min(100%, 18rem);
     }
     .hero h1 {
         font-size: 2.2rem;
@@ -794,6 +806,7 @@ html.dark .card-como p strong { color: #C084FC; }
         width: 100%;
         padding: 1rem 1.25rem;
         border-radius: 1rem;
+        max-width: 100%;
     }
     .como-funciona {
         padding: 3rem 1rem;
@@ -803,6 +816,12 @@ html.dark .card-como p strong { color: #C084FC; }
     }
     .categories-grid { grid-template-columns: repeat(2, 1fr); }
     .companies-grid { grid-template-columns: 1fr; }
+    .search-full,
+    .search-full-wrap,
+    .search-full input {
+        width: 100%;
+        min-width: 0;
+    }
     .cards-como {
         grid-template-columns: 1fr;
         gap: 1rem;
@@ -811,10 +830,33 @@ html.dark .card-como p strong { color: #C084FC; }
         padding: 1.5rem;
         border-radius: 1.25rem;
     }
+    .company-card,
+    .category-card,
+    .cadastro-form,
+    .login-card {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+    .company-card {
+        padding: .95rem;
+        border-radius: 1rem;
+    }
+    .company-actions {
+        flex-wrap: wrap;
+    }
+    .company-address {
+        word-break: break-word;
+    }
     .form-row { grid-template-columns: 1fr; }
     .navbar-links .btn-instalar { display: none; }
 }
 @media (max-width: 480px) {
+    .container,
+    .page-section {
+        padding-left: .75rem;
+        padding-right: .75rem;
+    }
     .navbar {
         padding: 0 .75rem;
     }
@@ -828,6 +870,7 @@ html.dark .card-como p strong { color: #C084FC; }
         padding: .5rem .65rem;
         border-radius: .85rem;
         background: rgba(124, 58, 237, .08);
+        min-width: 0;
     }
     .navbar-links a span { display: none; }
     .btn-cadastrar {
@@ -850,6 +893,28 @@ html.dark .card-como p strong { color: #C084FC; }
     }
     .card-como {
         padding: 1.25rem;
+        border-radius: 1rem;
+    }
+    .company-card,
+    .category-card,
+    .login-card,
+    .cadastro-form {
+        border-radius: 1rem;
+    }
+    .company-card {
+        gap: .75rem;
+    }
+    .company-logo,
+    .company-logo-placeholder {
+        width: 56px;
+        height: 56px;
+        min-width: 56px;
+    }
+    .company-name {
+        white-space: normal;
+        overflow: visible;
+        text-overflow: unset;
+        line-height: 1.35;
     }
     .categories-grid { grid-template-columns: 1fr; }
 }
