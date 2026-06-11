@@ -382,6 +382,105 @@ textarea {
     height: 18px;
     color: var(--text-light);
 }
+.search-sort-wrap {
+    width: 220px;
+    max-width: 100%;
+}
+.search-sort-wrap select {
+    width: 100%;
+    padding: .7rem .9rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--white);
+    color: var(--text);
+}
+.ranking-panel {
+    margin-bottom: 1.75rem;
+    padding: 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    background: linear-gradient(135deg, rgba(124, 58, 237, .08), rgba(34, 197, 94, .08));
+}
+.ranking-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+.ranking-kicker {
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--primary);
+    margin-bottom: .2rem;
+}
+.ranking-header h2 {
+    font-size: 1.2rem;
+    line-height: 1.2;
+}
+.ranking-help {
+    color: var(--text-light);
+    font-size: .9rem;
+}
+.ranking-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+.ranking-card {
+    display: flex;
+    gap: .9rem;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    padding: 1rem;
+    border-radius: 1rem;
+    background: var(--white);
+    border: 1px solid rgba(229, 231, 235, .9);
+    box-shadow: var(--shadow);
+}
+.ranking-card:hover {
+    border-color: rgba(124, 58, 237, .3);
+    box-shadow: var(--shadow-md);
+}
+.ranking-position {
+    width: 2.15rem;
+    height: 2.15rem;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(90deg, #7C3AED, #22C55E);
+    color: #FFF;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+.ranking-logo .company-logo,
+.ranking-logo .company-logo-placeholder {
+    width: 54px;
+    height: 54px;
+}
+.ranking-copy {
+    min-width: 0;
+}
+.ranking-copy strong,
+.ranking-copy span {
+    display: block;
+}
+.ranking-copy strong {
+    margin-bottom: .15rem;
+}
+.ranking-copy span {
+    color: var(--text-light);
+    font-size: .84rem;
+    margin-bottom: .35rem;
+}
+.ranking-stars .company-stars {
+    margin-bottom: 0;
+}
 .companies-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -663,6 +762,107 @@ textarea {
 .company-social-link:hover {
     border-color: var(--primary);
     color: var(--primary);
+}
+.company-rating-help {
+    color: var(--text-light);
+    margin-bottom: .9rem;
+}
+.rating-form-card {
+    border: 1px solid rgba(226, 232, 240, .9);
+    border-radius: 1rem;
+    background: var(--white);
+    padding: 1rem;
+}
+.rating-form-card.is-rated {
+    opacity: .92;
+}
+.rating-star-input {
+    display: flex;
+    gap: .55rem;
+    flex-wrap: wrap;
+    margin-bottom: .9rem;
+}
+.rating-star-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: .9rem;
+    border: 1px solid var(--border);
+    background: var(--white);
+    color: #CBD5E1;
+    font-size: 1.6rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: transform .15s, border-color .15s, color .15s, background .15s;
+}
+.rating-star-btn:hover,
+.rating-star-btn.is-active {
+    transform: translateY(-1px);
+    color: #F59E0B;
+    border-color: rgba(245, 158, 11, .45);
+    background: rgba(245, 158, 11, .08);
+}
+.rating-form-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+.rating-form-footer span {
+    color: var(--text-light);
+    font-size: .9rem;
+}
+.rating-submit-btn {
+    width: auto;
+    margin-top: 0;
+    min-width: 220px;
+}
+.rating-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .85rem;
+    margin-bottom: 1rem;
+}
+.rating-summary-box {
+    border-radius: 1rem;
+    padding: 1rem;
+    background: var(--white);
+    border: 1px solid rgba(226, 232, 240, .9);
+    text-align: center;
+}
+.rating-summary-box strong,
+.rating-summary-box span {
+    display: block;
+}
+.rating-summary-box strong {
+    font-size: 1.6rem;
+    margin-bottom: .15rem;
+}
+.rating-summary-box span {
+    color: var(--text-light);
+    font-size: .88rem;
+}
+.rating-list {
+    display: grid;
+    gap: .7rem;
+}
+.rating-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .85rem 1rem;
+    border-radius: .95rem;
+    background: var(--white);
+    border: 1px solid rgba(226, 232, 240, .9);
+}
+.rating-list-stars {
+    display: flex;
+    align-items: center;
+    gap: .22rem;
+}
+.rating-empty {
+    color: var(--text-light);
 }
 
 /* ---- CADASTRO ---- */
@@ -1054,6 +1254,7 @@ html.dark .pwa-install-mobile {
 html.dark .page-btn,
 html.dark .btn-share,
 html.dark .btn-voltar,
+html.dark .search-sort-wrap select,
 html.dark .search-bar input,
 html.dark .search-full input,
 html.dark .form-group input,
@@ -1080,7 +1281,11 @@ html.dark .admin-help {
 }
 html.dark .company-page-card,
 html.dark .company-profile-logo-wrap,
-html.dark .company-social-link {
+html.dark .company-social-link,
+html.dark .rating-form-card,
+html.dark .rating-summary-box,
+html.dark .rating-list-item,
+html.dark .ranking-card {
     background: #253042;
     border-color: rgba(148, 163, 184, .14);
     color: #F8FAFC;
@@ -1097,6 +1302,10 @@ html.dark .company-profile-category,
 html.dark .company-profile-rating,
 html.dark .company-location-copy span,
 html.dark .company-social-link span,
+html.dark .ranking-copy span,
+html.dark .ranking-help,
+html.dark .company-rating-help,
+html.dark .rating-form-footer span,
 html.dark .logo-help,
 html.dark .logo-file-name {
     color: #CBD5E1;
@@ -1126,6 +1335,21 @@ html.dark .company-map-link:hover,
 html.dark .company-link:hover,
 html.dark .company-social-link:hover {
     color: #C084FC;
+}
+html.dark .ranking-panel {
+    background: linear-gradient(135deg, rgba(124, 58, 237, .18), rgba(34, 197, 94, .14));
+    border-color: rgba(148, 163, 184, .14);
+}
+html.dark .rating-star-btn {
+    background: #182132;
+    border-color: rgba(148, 163, 184, .22);
+    color: #64748B;
+}
+html.dark .rating-star-btn:hover,
+html.dark .rating-star-btn.is-active {
+    color: #FBBF24;
+    border-color: rgba(251, 191, 36, .42);
+    background: rgba(251, 191, 36, .08);
 }
 html.dark .company-section-heading {
     color: #F8FAFC;
@@ -1228,9 +1452,11 @@ html.dark .card-como p strong { color: #C084FC; }
     }
     .categories-grid { grid-template-columns: repeat(2, 1fr); }
     .companies-grid { grid-template-columns: 1fr; }
+    .ranking-grid { grid-template-columns: 1fr; }
     .search-full,
     .search-full-wrap,
-    .search-full input {
+    .search-full input,
+    .search-sort-wrap {
         width: 100%;
         min-width: 0;
     }
@@ -1298,6 +1524,21 @@ html.dark .card-como p strong { color: #C084FC; }
     }
     .company-social-grid {
         grid-template-columns: 1fr;
+    }
+    .rating-summary-grid {
+        grid-template-columns: 1fr;
+    }
+    .rating-form-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .rating-submit-btn {
+        width: 100%;
+        min-width: 0;
+    }
+    .rating-list-item {
+        flex-direction: column;
+        align-items: flex-start;
     }
     .form-row { grid-template-columns: 1fr; }
     .admin-header,

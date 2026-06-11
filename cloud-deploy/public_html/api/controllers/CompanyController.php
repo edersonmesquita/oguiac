@@ -13,6 +13,7 @@ function getCompanies(): void {
     $search = sanitize($_GET['search'] ?? '');
     $categoryId = sanitize($_GET['category'] ?? '');
     $approved = $_GET['approved'] ?? null;
+    $sort = sanitize($_GET['sort'] ?? 'rating');
     $page = max(1, (int) ($_GET['page'] ?? 1));
     $limit = min(50, max(1, (int) ($_GET['limit'] ?? 20)));
     $offset = ($page - 1) * $limit;
@@ -43,6 +44,10 @@ function getCompanies(): void {
     $countStmt->execute($params);
     $total = (int) $countStmt->fetchColumn();
 
+    $orderBy = $sort === 'recent'
+        ? 'c.createdAt DESC'
+        : 'COALESCE(AVG(r.stars), 0) DESC, COUNT(r.id) DESC, c.name ASC';
+
     $stmt = $db->prepare("
         SELECT
             c.*,
@@ -54,7 +59,7 @@ function getCompanies(): void {
         LEFT JOIN ratings r ON r.companyId = c.id
         WHERE $whereStr
         GROUP BY c.id
-        ORDER BY c.createdAt DESC
+        ORDER BY $orderBy
         LIMIT ? OFFSET ?
     ");
     $stmt->execute(array_merge($params, [$limit, $offset]));

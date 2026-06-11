@@ -104,6 +104,18 @@ function renderStars(avg, total) {
     return `<div class="company-stars">${stars}<span class="rating-count">(${total})</span></div>`;
 }
 
+function renderStaticStars(value) {
+    let stars = '';
+    for (let i = 1; i <= 5; i++) {
+        stars += `<span class="${i <= value ? 'star' : 'star-empty'}">&#9733;</span>`;
+    }
+    return stars;
+}
+
+function ratingLabel(value) {
+    return ['Pessima', 'Ruim', 'Boa', 'Muito boa', 'Excelente'][value - 1] || '';
+}
+
 // Logo da empresa
 function companyLogoHTML(company) {
     const logo = normalizePublicAssetUrl(company.logo);
@@ -499,11 +511,13 @@ function renderCatGrid(cats) {
 let currentPage = 1;
 let currentSearch = '';
 let currentCategory = '';
+let currentSort = 'rating';
 
 async function renderBuscar(app) {
     const query = getQuery();
     currentSearch   = query.search   || '';
     currentCategory = query.category || '';
+    currentSort     = query.sort     || 'rating';
     const catName   = query.catName  || '';
 
     app.innerHTML = `<div class="page-section container">
@@ -515,19 +529,33 @@ async function renderBuscar(app) {
             <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
             <input type="text" id="search-input" placeholder="Digite o nome da empresa ou endere&ccedil;o..." value="${currentSearch}">
           </div>
+          <div class="search-sort-wrap">
+            <select id="search-sort">
+              <option value="rating" ${currentSort === 'rating' ? 'selected' : ''}>Melhor avaliadas</option>
+              <option value="recent" ${currentSort === 'recent' ? 'selected' : ''}>Mais recentes</option>
+            </select>
+          </div>
         </div>
+        <div id="ranking-highlight"></div>
         <div id="companies-list"><p style="color:var(--text-light)">Carregando...</p></div>
         <div id="pagination" class="pagination"></div>
     </div>`;
 
     currentPage = 1;
     await loadCompanies();
+    await loadRankingHighlight();
 
     document.getElementById('search-input').addEventListener('input', debounce(async e => {
         currentSearch = e.target.value;
         currentPage   = 1;
         await loadCompanies();
     }, 400));
+
+    document.getElementById('search-sort').addEventListener('change', async e => {
+        currentSort = e.target.value;
+        currentPage = 1;
+        await loadCompanies();
+    });
 }
 
 async function loadCompanies() {
@@ -538,12 +566,60 @@ async function loadCompanies() {
         const params = new URLSearchParams({ page: currentPage, limit: 20 });
         if (currentSearch)   params.set('search',   currentSearch);
         if (currentCategory) params.set('category', currentCategory);
+        if (currentSort)     params.set('sort',     currentSort);
 
         const data = await api('GET', `/companies?${params}`);
         renderCompaniesList(data.data);
         renderPagination(data.meta);
+        await loadRankingHighlight();
     } catch (e) {
         list.innerHTML = `<p style="color:var(--danger)">${e.message}</p>`;
+    }
+}
+
+async function loadRankingHighlight() {
+    const root = document.getElementById('ranking-highlight');
+    if (!root) return;
+
+    if (currentSearch || currentCategory) {
+        root.innerHTML = '';
+        return;
+    }
+
+    try {
+        const data = await api('GET', '/ratings/top-rated?limit=3');
+        const companies = data.data || [];
+
+        if (!companies.length) {
+            root.innerHTML = '';
+            return;
+        }
+
+        root.innerHTML = `
+        <section class="ranking-panel">
+          <div class="ranking-header">
+            <div>
+              <p class="ranking-kicker">Ranking</p>
+              <h2>Empresas mais bem avaliadas</h2>
+            </div>
+            <span class="ranking-help">As notas dos clientes definem a ordem.</span>
+          </div>
+          <div class="ranking-grid">
+            ${companies.map(company => `
+              <a class="ranking-card" href="#/empresa?id=${company.id}">
+                <span class="ranking-position">#${company.position}</span>
+                <div class="ranking-logo">${companyLogoHTML(company)}</div>
+                <div class="ranking-copy">
+                  <strong>${company.name}</strong>
+                  <span>${company.categoryName || 'Empresa cadastrada'}</span>
+                  <div class="ranking-stars">${renderStars(company.avgRating, company.totalRatings)}</div>
+                </div>
+              </a>
+            `).join('')}
+          </div>
+        </section>`;
+    } catch {
+        root.innerHTML = '';
     }
 }
 
@@ -632,8 +708,18 @@ async function renderEmpresaDetalhe(app) {
     app.innerHTML = `<div class="page-section container"><p style="color:var(--text-light)">Carregando empresa...</p></div>`;
 
     try {
-        const company = await api('GET', `/companies/${companyId}`);
+        const [company, ratingsData] = await Promise.all([
+            api('GET', `/companies/${companyId}`),
+            api('GET', `/ratings/${companyId}`).catch(() => ({ ratings: [], summary: null })),
+        ]);
         applyCompanyMeta(company);
+        const recentRatings = ratingsData.ratings || [];
+        const ratingSummary = ratingsData.summary || {
+            avgRating: Number(company.avgRating || 0),
+            totalRatings: Number(company.totalRatings || 0),
+        };
+        const ratingStorageKey = `gc_rated_${company.id}`;
+        const alreadyRated = localStorage.getItem(ratingStorageKey) === '1';
 
         const logo = normalizePublicAssetUrl(company.logo) || getBrandIcon();
         const shareUrl = companyPageUrl(company.id);
@@ -668,7 +754,7 @@ async function renderEmpresaDetalhe(app) {
                     <p class="company-profile-description">${company.description || 'Conecte-se com esta empresa diretamente pelo WhatsApp e veja suas informações completas.'}</p>
 
                     <div class="company-profile-rating">
-                      ${renderStars(company.avgRating, company.totalRatings)}
+                      ${renderStars(ratingSummary.avgRating, ratingSummary.totalRatings)}
                       <span>${company.totalRatings ? `${company.totalRatings} avaliação${company.totalRatings > 1 ? 'es' : ''}` : 'Sem avaliações ainda'}</span>
                     </div>
                   </div>
@@ -702,6 +788,46 @@ async function renderEmpresaDetalhe(app) {
               </div>
             </div>
 
+            <div class="company-section-card">
+              <div class="company-section-heading">Avaliar empresa</div>
+              <p class="company-rating-help">Sua nota ajuda a destacar as melhores empresas no ranking do Guia Canind&eacute;.</p>
+              <div class="rating-form-card ${alreadyRated ? 'is-rated' : ''}">
+                <div class="rating-star-input" id="rating-star-input">
+                  ${[1, 2, 3, 4, 5].map(value => `
+                    <button type="button" class="rating-star-btn" data-rating="${value}" aria-label="${value} estrela${value > 1 ? 's' : ''}">
+                      &#9733;
+                    </button>
+                  `).join('')}
+                </div>
+                <div class="rating-form-footer">
+                  <span id="rating-choice-label">${alreadyRated ? 'Esta empresa j&aacute; foi avaliada neste aparelho.' : 'Escolha de 1 a 5 estrelas.'}</span>
+                  <button class="btn-submit rating-submit-btn" id="rating-submit-btn" ${alreadyRated ? 'disabled' : ''}>Enviar avalia&ccedil;&atilde;o</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="company-section-card">
+              <div class="company-section-heading">Resumo das avalia&ccedil;&otilde;es</div>
+              <div class="rating-summary-grid">
+                <div class="rating-summary-box">
+                  <strong>${ratingSummary.avgRating ? Number(ratingSummary.avgRating).toFixed(1) : '0.0'}</strong>
+                  <span>M&eacute;dia geral</span>
+                </div>
+                <div class="rating-summary-box">
+                  <strong>${ratingSummary.totalRatings || 0}</strong>
+                  <span>Total de votos</span>
+                </div>
+              </div>
+              <div class="rating-list">
+                ${recentRatings.length ? recentRatings.slice(0, 6).map(rating => `
+                  <div class="rating-list-item">
+                    <div class="rating-list-stars">${renderStaticStars(rating.stars)}</div>
+                    <span>${new Date(rating.createdAt).toLocaleDateString('pt-BR')}</span>
+                  </div>
+                `).join('') : '<p class="rating-empty">Ainda n&atilde;o h&aacute; avalia&ccedil;&otilde;es registradas. Seja o primeiro a avaliar.</p>'}
+              </div>
+            </div>
+
             <a class="company-primary-whatsapp" href="${whatsappLink(company.whatsapp)}" target="_blank" rel="noopener">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.999 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.978-1.309A9.959 9.959 0 0012 22c5.522 0 10-4.477 10-10S17.522 2 12 2z"/></svg>
               WhatsApp
@@ -710,6 +836,54 @@ async function renderEmpresaDetalhe(app) {
             ${socialLinks ? `<div class="company-social-grid">${socialLinks}</div>` : ''}
           </div>
         </section>`;
+
+        const ratingButtons = Array.from(document.querySelectorAll('.rating-star-btn'));
+        const submitButton = document.getElementById('rating-submit-btn');
+        const choiceLabel = document.getElementById('rating-choice-label');
+        let selectedRating = 0;
+
+        const syncRatingButtons = () => {
+            ratingButtons.forEach(button => {
+                const value = Number(button.dataset.rating || 0);
+                button.classList.toggle('is-active', value <= selectedRating);
+            });
+            if (!alreadyRated && choiceLabel) {
+                choiceLabel.textContent = selectedRating
+                    ? `${selectedRating} estrela${selectedRating > 1 ? 's' : ''} - ${ratingLabel(selectedRating)}`
+                    : 'Escolha de 1 a 5 estrelas.';
+            }
+        };
+
+        ratingButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                if (alreadyRated) return;
+                selectedRating = Number(button.dataset.rating || 0);
+                syncRatingButtons();
+            });
+        });
+
+        submitButton?.addEventListener('click', async () => {
+            if (!selectedRating) {
+                toast('Selecione de 1 a 5 estrelas antes de enviar.', 'error');
+                return;
+            }
+
+            submitButton.disabled = true;
+            submitButton.textContent = 'Enviando...';
+
+            try {
+                await api('POST', '/ratings', { companyId: company.id, stars: selectedRating }, getToken());
+                localStorage.setItem(ratingStorageKey, '1');
+                toast('Avalia&ccedil;&atilde;o enviada com sucesso!', 'success');
+                await renderEmpresaDetalhe(app);
+            } catch (err) {
+                toast(err.message, 'error');
+                submitButton.disabled = false;
+                submitButton.textContent = 'Enviar avalia&ccedil;&atilde;o';
+            }
+        });
+
+        syncRatingButtons();
     } catch (err) {
         app.innerHTML = `<div class="page-section container"><div class="empty-state"><p>${err.message}</p></div></div>`;
     }

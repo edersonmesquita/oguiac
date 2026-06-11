@@ -104,6 +104,7 @@ try {
         case 'ratings':
             require_once __DIR__ . '/controllers/RatingController.php';
             match (true) {
+                $method === 'GET' && $id === 'top-rated' => getTopRatedCompanies(),
                 $method === 'POST' && !$id => createRating(),
                 $method === 'GET' && $id => getCompanyRatings($id),
                 default => respondError(404, 'Rota não encontrada'),
