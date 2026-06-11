@@ -106,8 +106,9 @@ function renderStars(avg, total) {
 
 // Logo da empresa
 function companyLogoHTML(company) {
-    if (company.logo) {
-        return `<img class="company-logo" src="${company.logo}" alt="${company.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+    const logo = normalizePublicAssetUrl(company.logo);
+    if (logo) {
+        return `<img class="company-logo" src="${logo}" alt="${company.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                 <div class="company-logo-placeholder" style="display:none">${company.name.charAt(0)}</div>`;
     }
     return `<div class="company-logo-placeholder">${company.name.charAt(0)}</div>`;
@@ -169,6 +170,22 @@ function getBrandIcon() {
     return getSettings().branding?.iconUrl || DEFAULT_SETTINGS.branding.iconUrl;
 }
 
+function normalizePublicAssetUrl(url) {
+    if (!url) return '';
+    const raw = String(url).trim();
+    if (!raw) return '';
+    if (/^https?:\/\/seudominio\.com\.br/i.test(raw)) {
+        const suffix = raw.replace(/^https?:\/\/seudominio\.com\.br/i, '');
+        return `https://oguiacaninde.online/${suffix.replace(/^\/?/, '')}`;
+    }
+    if (/^https?:\/\//i.test(raw)) return raw;
+    if (raw.startsWith('/')) return raw;
+    if (/^(uploads|public\/uploads)\//i.test(raw)) {
+        return `https://oguiacaninde.online/${raw.replace(/^public\//i, '')}`;
+    }
+    return raw;
+}
+
 function buildWhatsAppHref(number, message = '') {
     const digits = String(number || '').replace(/\D/g, '');
     if (!digits) return '#';
@@ -196,7 +213,7 @@ function updateMetaTag(selector, value) {
 function applyCompanyMeta(company) {
     const title = `${company.name} - ${company.categoryName || 'Empresa'} | Guia Canindé`;
     const description = company.description || company.address || `Veja a página da empresa ${company.name} no Guia Canindé.`;
-    const image = company.logo || getBrandIcon();
+    const image = normalizePublicAssetUrl(company.logo) || getBrandIcon();
 
     document.title = title;
     updateMetaTag('meta[name="description"]', description);
@@ -618,7 +635,7 @@ async function renderEmpresaDetalhe(app) {
         const company = await api('GET', `/companies/${companyId}`);
         applyCompanyMeta(company);
 
-        const logo = company.logo || getBrandIcon();
+        const logo = normalizePublicAssetUrl(company.logo) || getBrandIcon();
         const shareUrl = companyPageUrl(company.id);
         const shareText = company.description || company.address || `Veja ${company.name} no Guia Canindé`;
         const socialLinks = [
@@ -706,10 +723,11 @@ async function renderCadastrar(app) {
       <div class="cadastro-form">
         <h1>Cadastrar Meu Neg&oacute;cio</h1>
         <div class="form-group">
-          <label>Logo da Empresa (Opcional)</label>
+          <label>Foto ou Logo da Empresa (Opcional)</label>
           <div class="logo-upload" id="logo-drop" onclick="document.getElementById('logo-file').click()">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--text-light);margin:0 auto;display:block"><path d="M12 4v16m8-8H4"/></svg>
-            <p>Clique para adicionar logo</p>
+            <p>Clique para adicionar foto ou logo</p>
+            <small class="logo-help">Formatos aceitos: JPG, PNG, WebP ou GIF at&eacute; 2MB</small>
             <div id="logo-preview"></div>
           </div>
           <input type="file" id="logo-file" accept="image/*" style="display:none">
@@ -780,7 +798,7 @@ async function renderCadastrar(app) {
         const file = e.target.files[0];
         if (!file) return;
         const preview = document.getElementById('logo-preview');
-        preview.innerHTML = `<img src="${URL.createObjectURL(file)}" style="max-width:120px;border-radius:8px;margin-top:.75rem">`;
+        preview.innerHTML = `<img src="${URL.createObjectURL(file)}" style="max-width:120px;border-radius:8px;margin-top:.75rem"><div class="logo-file-name">${file.name}</div>`;
 
         // Upload imediato
         try {

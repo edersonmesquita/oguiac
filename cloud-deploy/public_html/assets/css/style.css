@@ -714,6 +714,18 @@ textarea {
 }
 .logo-upload:hover { border-color: var(--primary); }
 .logo-upload p { font-size: .9rem; color: var(--text-light); margin-top: .5rem; }
+.logo-help {
+    display: block;
+    margin-top: .35rem;
+    color: var(--text-light);
+    font-size: .78rem;
+}
+.logo-file-name {
+    margin-top: .5rem;
+    font-size: .78rem;
+    color: var(--text-light);
+    word-break: break-word;
+}
 .btn-submit {
     width: 100%;
     background: var(--accent);
@@ -1064,6 +1076,52 @@ html.dark .admin-card {
 html.dark .admin-subtitle,
 html.dark .admin-help {
     color: #CBD5E1;
+}
+html.dark .company-page-card,
+html.dark .company-profile-logo-wrap,
+html.dark .company-social-link {
+    background: #253042;
+    border-color: rgba(148, 163, 184, .14);
+    color: #F8FAFC;
+}
+html.dark .company-page-shell {
+    background: radial-gradient(circle at top, rgba(147, 51, 234, .18), rgba(34, 197, 94, .10) 42%, transparent 72%);
+}
+html.dark .company-section-card {
+    background: #1E293B;
+    border-color: rgba(148, 163, 184, .14);
+}
+html.dark .company-back-link,
+html.dark .company-profile-category,
+html.dark .company-profile-rating,
+html.dark .company-location-copy span,
+html.dark .company-social-link span,
+html.dark .logo-help,
+html.dark .logo-file-name {
+    color: #CBD5E1;
+}
+html.dark .company-profile-description,
+html.dark .company-location-copy strong,
+html.dark .company-map-link,
+html.dark .company-social-link strong,
+html.dark .company-link {
+    color: #F8FAFC;
+}
+html.dark .company-map-link:hover,
+html.dark .company-link:hover,
+html.dark .company-social-link:hover {
+    color: #C084FC;
+}
+html.dark .company-section-heading {
+    color: #F8FAFC;
+}
+html.dark .btn-share-whatsapp {
+    background: rgba(34, 197, 94, .18);
+    color: #BBF7D0;
+}
+html.dark .btn-share-whatsapp:hover {
+    border-color: rgba(134, 239, 172, .4);
+    color: #DCFCE7;
 }
 html.dark .empty-state svg,
 html.dark .dark-toggle svg {
