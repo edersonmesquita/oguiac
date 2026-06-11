@@ -8,6 +8,55 @@
 // Configuracao
 // ============================================================
 const API_BASE = window.API_BASE_URL || '/api';
+const DEFAULT_SETTINGS = {
+    branding: {
+        siteName: 'Guia Canind&eacute;',
+        siteTitle: 'Guia Canind&eacute; - Encontre os melhores neg&oacute;cios da cidade',
+        siteDescription: 'O melhor guia de empresas e servi&ccedil;os de Canind&eacute;. Encontre os melhores neg&oacute;cios da cidade.',
+        iconUrl: '/ICONETESTE.png',
+        logoLightUrl: '/LOGO-BG.png',
+        logoDarkUrl: '/LOGO-BR.png',
+        ogImageUrl: 'https://oguiacaninde.online/ICONETESTE.png',
+    },
+    contact: {
+        whatsappNumber: '5585999999999',
+        whatsappMessage: 'Ol&aacute;! Gostaria de falar com a equipe do Guia Canind&eacute;.',
+        whatsappButtonTitle: 'Fale conosco',
+    },
+    navigation: {
+        menuItems: [
+            { label: 'In&iacute;cio', route: '/', icon: 'home', visible: true, highlight: false },
+            { label: 'Categorias', route: '/categorias', icon: 'grid', visible: true, highlight: false },
+            { label: 'Buscar', route: '/buscar', icon: 'search', visible: true, highlight: false },
+            { label: 'Login da Empresa', route: '/empresa-login', icon: 'building', visible: true, highlight: false },
+            { label: 'Cadastrar Neg&oacute;cio', route: '/cadastrar', icon: 'briefcase', visible: true, highlight: true },
+        ],
+    },
+    home: {
+        heroTitle: 'Encontre tudo em Canind&eacute;',
+        heroDescription: 'Conecte-se diretamente com empresas e profissionais da sua cidade. R&aacute;pido, f&aacute;cil e gratuito!',
+        primaryButtonLabel: 'O que est&aacute; buscando?',
+        primaryButtonRoute: '/buscar',
+        secondaryButtonLabel: 'Cadastrar Meu Neg&oacute;cio',
+        secondaryButtonRoute: '/cadastrar',
+        sectionTitle: 'Como funciona?',
+        featurePrimaryTitle: '100% gratuito!',
+        featurePrimaryText: 'Conecte-se diretamente pelo WhatsApp com empresas e profissionais.',
+        featureSecondaryTitle: 'Encontre servi&ccedil;os perto de voc&ecirc;',
+        featureSecondaryText: 'Encontre servi&ccedil;os pr&oacute;ximos a voc&ecirc;: pizzarias, encanadores, cabeleireiros e muito mais!',
+        footerLine1: 'Encontre o que precisa em Canind&eacute;',
+        footerLine2: 'R&aacute;pido, f&aacute;cil e direto no WhatsApp',
+    },
+    theme: {
+        themeColorLight: '#4f46e5',
+        themeColorDark: '#182132',
+        pwaName: 'Guia Canind&eacute;',
+        pwaShortName: 'Guia',
+    },
+};
+
+let systemSettings = cloneData(DEFAULT_SETTINGS);
+let settingsLoaded = false;
 
 // ============================================================
 // Utilitarios
@@ -22,7 +71,7 @@ async function api(method, path, body = null, token = null) {
     const res = await fetch(API_BASE + path, opts);
     const data = await res.json().catch(() => ({}));
 
-    if (!res.ok) throw new Error(data.error || `Erro ${res.status}`);
+    if (!res.ok) throw new Error(data.error || data.message || `Erro ${res.status}`);
     return data;
 }
 
@@ -31,7 +80,7 @@ async function apiUpload(formData, token = null) {
     if (token) headers['Authorization'] = `Bearer ${token}`;
     const res = await fetch(`${API_BASE}/companies/upload-logo`, { method: 'POST', headers, body: formData });
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(data.error || 'Erro no upload');
+    if (!res.ok) throw new Error(data.error || data.message || 'Erro no upload');
     return data;
 }
 
@@ -78,6 +127,142 @@ function removeToken() { localStorage.removeItem('gc_token'); localStorage.remov
 function setUser(u) { localStorage.setItem('gc_user', JSON.stringify(u)); }
 function getUser() { try { return JSON.parse(localStorage.getItem('gc_user')); } catch { return null; } }
 
+function deepMerge(target, source) {
+    if (!source || typeof source !== 'object' || Array.isArray(source)) return source ?? target;
+    const output = { ...target };
+    Object.entries(source).forEach(([key, value]) => {
+        if (value && typeof value === 'object' && !Array.isArray(value) && output[key] && typeof output[key] === 'object' && !Array.isArray(output[key])) {
+            output[key] = deepMerge(output[key], value);
+        } else {
+            output[key] = value;
+        }
+    });
+    return output;
+}
+
+function getSettings() {
+    return systemSettings || DEFAULT_SETTINGS;
+}
+
+function decodeHtml(value) {
+    const el = document.createElement('textarea');
+    el.innerHTML = value || '';
+    return el.value;
+}
+
+function cloneData(value) {
+    if (typeof structuredClone === 'function') {
+        return structuredClone(value);
+    }
+    return JSON.parse(JSON.stringify(value));
+}
+
+function getThemeColors() {
+    const settings = getSettings();
+    return {
+        light: settings.theme?.themeColorLight || DEFAULT_SETTINGS.theme.themeColorLight,
+        dark: settings.theme?.themeColorDark || DEFAULT_SETTINGS.theme.themeColorDark,
+    };
+}
+
+function getBrandIcon() {
+    return getSettings().branding?.iconUrl || DEFAULT_SETTINGS.branding.iconUrl;
+}
+
+function buildWhatsAppHref(number, message = '') {
+    const digits = String(number || '').replace(/\D/g, '');
+    if (!digits) return '#';
+    const full = digits.startsWith('55') ? digits : `55${digits}`;
+    const query = message ? `?text=${encodeURIComponent(message)}` : '';
+    return `https://wa.me/${full}${query}`;
+}
+
+function menuIcon(iconName) {
+    const icons = {
+        home: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>',
+        grid: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>',
+        search: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>',
+        building: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><path d="M9 9h.01"/><path d="M9 13h.01"/><path d="M9 17h.01"/></svg>',
+        briefcase: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>',
+        settings: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.04 1.56V21a2 2 0 0 1-4 0v-.09A1.7 1.7 0 0 0 8.96 19.35a1.7 1.7 0 0 0-1.87.34l-.06.06A2 2 0 1 1 4.2 16.92l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1.04H3a2 2 0 0 1 0-4h.09A1.7 1.7 0 0 0 4.65 8.4a1.7 1.7 0 0 0-.34-1.87l-.06-.06A2 2 0 1 1 7.08 3.64l.06.06A1.7 1.7 0 0 0 9 4.04a1.7 1.7 0 0 0 1.04-1.56V2a2 2 0 0 1 4 0v.09A1.7 1.7 0 0 0 15 4.65a1.7 1.7 0 0 0 1.87-.34l.06-.06A2 2 0 0 1 19.76 7.08l-.06.06A1.7 1.7 0 0 0 19.36 9c0 .68.4 1.3 1.04 1.56H21a2 2 0 0 1 0 4h-.09c-.64.26-1.04.88-1.51 1.44Z"/></svg>',
+    };
+    return icons[iconName] || icons.grid;
+}
+
+function renderNavLink(item) {
+    const route = item.route || '/';
+    const attrs = route.startsWith('http')
+        ? `href="${route}" target="_blank" rel="noopener"`
+        : `href="#${route}" data-route="${route}"`;
+    const className = item.highlight ? 'btn-cadastrar' : '';
+    return `<li><a ${attrs} class="${className}">${menuIcon(item.icon)}<span>${item.label || ''}</span></a></li>`;
+}
+
+function applySiteSettings() {
+    const settings = getSettings();
+    const branding = settings.branding || {};
+    const contact = settings.contact || {};
+    const home = settings.home || {};
+    const theme = settings.theme || {};
+
+    document.title = decodeHtml(branding.siteTitle || DEFAULT_SETTINGS.branding.siteTitle);
+
+    const metaMap = [
+        ['meta[name="application-name"]', branding.siteName],
+        ['meta[name="description"]', branding.siteDescription],
+        ['meta[name="apple-mobile-web-app-title"]', theme.pwaName || branding.siteName],
+        ['meta[property="og:title"]', branding.siteTitle],
+        ['meta[property="og:description"]', branding.siteDescription],
+        ['meta[property="og:image"]', branding.ogImageUrl || branding.iconUrl],
+        ['meta[property="og:image:alt"]', branding.siteName],
+        ['meta[property="og:site_name"]', branding.siteName],
+        ['meta[name="twitter:title"]', branding.siteTitle],
+        ['meta[name="twitter:description"]', branding.siteDescription],
+        ['meta[name="twitter:image"]', branding.ogImageUrl || branding.iconUrl],
+    ];
+    metaMap.forEach(([selector, value]) => {
+        const el = document.querySelector(selector);
+        if (el && value) el.setAttribute('content', decodeHtml(value));
+    });
+
+    document.querySelectorAll('link[rel="icon"], link[rel="apple-touch-icon"]').forEach(link => {
+        link.setAttribute('href', branding.iconUrl || DEFAULT_SETTINGS.branding.iconUrl);
+    });
+
+    const whatsapp = document.getElementById('floating-whatsapp');
+    if (whatsapp) {
+        whatsapp.href = buildWhatsAppHref(contact.whatsappNumber, contact.whatsappMessage);
+        whatsapp.title = contact.whatsappButtonTitle || DEFAULT_SETTINGS.contact.whatsappButtonTitle;
+        whatsapp.setAttribute('aria-label', whatsapp.title);
+    }
+
+    const footer = document.getElementById('site-footer');
+    if (footer) {
+        footer.innerHTML = `<p>${home.footerLine1 || DEFAULT_SETTINGS.home.footerLine1}</p><p>${home.footerLine2 || DEFAULT_SETTINGS.home.footerLine2}</p>`;
+    }
+
+    const navbarRoot = document.getElementById('navbar-root');
+    if (navbarRoot) {
+        navbarRoot.innerHTML = renderNavbar();
+        updateNavActive();
+    }
+
+    updateThemeColorMeta();
+}
+
+async function ensureSettingsLoaded(force = false) {
+    if (settingsLoaded && !force) return systemSettings;
+    try {
+        const remote = await api('GET', '/settings');
+        systemSettings = deepMerge(cloneData(DEFAULT_SETTINGS), remote || {});
+    } catch {
+        systemSettings = cloneData(DEFAULT_SETTINGS);
+    }
+    settingsLoaded = true;
+    applySiteSettings();
+    return systemSettings;
+}
+
 // ============================================================
 // Roteador SPA (hash-based)
 // ============================================================
@@ -87,6 +272,8 @@ const routes = {
     '/buscar':       renderBuscar,
     '/cadastrar':    renderCadastrar,
     '/empresa-login':renderEmpresaLogin,
+    '/admin-login':  renderAdminLogin,
+    '/admin-config': renderAdminConfig,
 };
 
 function getRoute() {
@@ -104,16 +291,20 @@ function navigate(path) {
     location.hash = path;
 }
 
-window.addEventListener('hashchange', router);
-window.addEventListener('load', router);
+window.addEventListener('hashchange', () => { router(); });
+window.addEventListener('load', async () => {
+    await ensureSettingsLoaded();
+    router();
+});
 
-function router() {
+async function router() {
+    await ensureSettingsLoaded();
     const path = getRoute();
     const handler = routes[path];
     const app = document.getElementById('app');
 
     if (handler) {
-        handler(app);
+        await handler(app);
     } else {
         app.innerHTML = `<div class="page-section container"><div class="empty-state">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
@@ -134,20 +325,24 @@ function updateNavActive() {
 // Navbar
 // ============================================================
 function renderNavbar() {
-    const user = getUser();
+    const settings = getSettings();
+    const branding = settings.branding || {};
+    const menuItems = (settings.navigation?.menuItems || DEFAULT_SETTINGS.navigation.menuItems).filter(item => item && item.visible !== false);
+    const isAdminSession = getUser()?.role === 'admin';
+    const adminLink = isAdminSession
+        ? `<li><a href="#/admin-config" data-route="/admin-config">${menuIcon('settings')}<span>Painel Admin</span></a></li>`
+        : `<li><a href="#/admin-login" data-route="/admin-login">${menuIcon('settings')}<span>Admin</span></a></li>`;
+
     return `
     <nav class="navbar">
       <div class="navbar-inner">
         <a href="#/" class="navbar-brand">
-          <img src="/ICONETESTE.png" alt="Guia Canind&eacute;">
-          Guia Canind&eacute;
+          <img src="${branding.iconUrl || DEFAULT_SETTINGS.branding.iconUrl}" alt="${branding.siteName || DEFAULT_SETTINGS.branding.siteName}">
+          ${branding.siteName || DEFAULT_SETTINGS.branding.siteName}
         </a>
         <ul class="navbar-links">
-          <li><a href="#/" data-route="/"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>In&iacute;cio</span></a></li>
-          <li><a href="#/categorias" data-route="/categorias"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><span>Categorias</span></a></li>
-          <li><a href="#/buscar" data-route="/buscar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><span>Buscar</span></a></li>
-          <li><a href="#/empresa-login" data-route="/empresa-login"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Login da Empresa</span></a></li>
-          <li><a href="#/cadastrar" class="btn-cadastrar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg> Cadastrar Neg&oacute;cio</a></li>
+          ${menuItems.map(renderNavLink).join('')}
+          ${adminLink}
           <li><button class="btn-instalar" id="btn-pwa" style="display:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg> Instalar App</button></li>
         </ul>
       </div>
@@ -158,42 +353,45 @@ function renderNavbar() {
 // HOME
 // ============================================================
 async function renderHome(app) {
+    const settings = getSettings();
+    const branding = settings.branding || {};
+    const home = settings.home || {};
     app.innerHTML = `
     <div class="hero">
       <div class="hero-inner">
         <div class="hero-copy">
-          <h1>Encontre tudo em Canind&eacute;</h1>
-          <p>Conecte-se diretamente com empresas e profissionais da sua cidade. R&aacute;pido, f&aacute;cil e gratuito!</p>
+          <h1>${home.heroTitle || DEFAULT_SETTINGS.home.heroTitle}</h1>
+          <p>${home.heroDescription || DEFAULT_SETTINGS.home.heroDescription}</p>
           <div class="hero-btns">
-            <a href="#/buscar" class="btn-hero-search">
+            <a href="#${home.primaryButtonRoute || DEFAULT_SETTINGS.home.primaryButtonRoute}" class="btn-hero-search">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-              O que est&aacute; buscando?
+              ${home.primaryButtonLabel || DEFAULT_SETTINGS.home.primaryButtonLabel}
             </a>
-            <a href="#/cadastrar" class="btn-hero-cadastrar">
+            <a href="#${home.secondaryButtonRoute || DEFAULT_SETTINGS.home.secondaryButtonRoute}" class="btn-hero-cadastrar">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/></svg>
-              Cadastrar Meu Neg&oacute;cio
+              ${home.secondaryButtonLabel || DEFAULT_SETTINGS.home.secondaryButtonLabel}
             </a>
           </div>
         </div>
         <div class="hero-logo">
-          <img class="hero-logo-light" src="/LOGO-BG.png" alt="Guia Canind&eacute;" onerror="this.src='/ICONETESTE.png'">
-          <img class="hero-logo-dark" src="/LOGO-BR.png" alt="Guia Canind&eacute;" onerror="this.src='/ICONETESTE.png'">
+          <img class="hero-logo-light" src="${branding.logoLightUrl || DEFAULT_SETTINGS.branding.logoLightUrl}" alt="${branding.siteName || DEFAULT_SETTINGS.branding.siteName}" onerror="this.src='${branding.iconUrl || DEFAULT_SETTINGS.branding.iconUrl}'">
+          <img class="hero-logo-dark" src="${branding.logoDarkUrl || DEFAULT_SETTINGS.branding.logoDarkUrl}" alt="${branding.siteName || DEFAULT_SETTINGS.branding.siteName}" onerror="this.src='${branding.iconUrl || DEFAULT_SETTINGS.branding.iconUrl}'">
         </div>
       </div>
     </div>
     <section class="como-funciona">
-      <h2>Como funciona?</h2>
+      <h2>${home.sectionTitle || DEFAULT_SETTINGS.home.sectionTitle}</h2>
       <div class="cards-como">
         <div class="card-como">
           <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>
-          <p><strong>100% gratuito!</strong> Conecte-se diretamente pelo WhatsApp com empresas e profissionais.</p>
+          <p><strong>${home.featurePrimaryTitle || DEFAULT_SETTINGS.home.featurePrimaryTitle}</strong> ${home.featurePrimaryText || DEFAULT_SETTINGS.home.featurePrimaryText}</p>
         </div>
         <div class="card-como">
           <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/></svg></div>
-          <p>Encontre servi&ccedil;os pr&oacute;ximos a voc&ecirc;: pizzarias, encanadores, cabeleireiros e muito mais!</p>
+          <p><strong>${home.featureSecondaryTitle || DEFAULT_SETTINGS.home.featureSecondaryTitle}</strong> ${home.featureSecondaryText || DEFAULT_SETTINGS.home.featureSecondaryText}</p>
         </div>
       </div>
-      <p style="margin-top:2rem;color:var(--text-light);font-size:.9rem">Encontre o que precisa em Canind&eacute; - R&aacute;pido, f&aacute;cil e direto no WhatsApp</p>
+      <p style="margin-top:2rem;color:var(--text-light);font-size:.9rem">${home.footerLine1 || DEFAULT_SETTINGS.home.footerLine1} - ${home.footerLine2 || DEFAULT_SETTINGS.home.footerLine2}</p>
     </section>`;
 }
 
@@ -557,14 +755,255 @@ async function renderEmpresaLogin(app) {
     });
 }
 
+function adminSettingsPayloadFromForm() {
+    const menuJson = document.getElementById('cfg-menu-items').value.trim();
+    let menuItems = DEFAULT_SETTINGS.navigation.menuItems;
+
+    if (menuJson) {
+        menuItems = JSON.parse(menuJson);
+    }
+
+    return {
+        branding: {
+            siteName: document.getElementById('cfg-site-name').value.trim(),
+            siteTitle: document.getElementById('cfg-site-title').value.trim(),
+            siteDescription: document.getElementById('cfg-site-description').value.trim(),
+            iconUrl: document.getElementById('cfg-icon-url').value.trim(),
+            logoLightUrl: document.getElementById('cfg-logo-light').value.trim(),
+            logoDarkUrl: document.getElementById('cfg-logo-dark').value.trim(),
+            ogImageUrl: document.getElementById('cfg-og-image').value.trim(),
+        },
+        contact: {
+            whatsappNumber: document.getElementById('cfg-whatsapp-number').value.trim(),
+            whatsappMessage: document.getElementById('cfg-whatsapp-message').value.trim(),
+            whatsappButtonTitle: document.getElementById('cfg-whatsapp-title').value.trim(),
+        },
+        navigation: {
+            menuItems,
+        },
+        home: {
+            heroTitle: document.getElementById('cfg-hero-title').value.trim(),
+            heroDescription: document.getElementById('cfg-hero-description').value.trim(),
+            primaryButtonLabel: document.getElementById('cfg-primary-label').value.trim(),
+            primaryButtonRoute: document.getElementById('cfg-primary-route').value.trim(),
+            secondaryButtonLabel: document.getElementById('cfg-secondary-label').value.trim(),
+            secondaryButtonRoute: document.getElementById('cfg-secondary-route').value.trim(),
+            sectionTitle: document.getElementById('cfg-section-title').value.trim(),
+            featurePrimaryTitle: document.getElementById('cfg-feature1-title').value.trim(),
+            featurePrimaryText: document.getElementById('cfg-feature1-text').value.trim(),
+            featureSecondaryTitle: document.getElementById('cfg-feature2-title').value.trim(),
+            featureSecondaryText: document.getElementById('cfg-feature2-text').value.trim(),
+            footerLine1: document.getElementById('cfg-footer-line1').value.trim(),
+            footerLine2: document.getElementById('cfg-footer-line2').value.trim(),
+        },
+        theme: {
+            themeColorLight: document.getElementById('cfg-theme-light').value.trim(),
+            themeColorDark: document.getElementById('cfg-theme-dark').value.trim(),
+            pwaName: document.getElementById('cfg-pwa-name').value.trim(),
+            pwaShortName: document.getElementById('cfg-pwa-short-name').value.trim(),
+        },
+    };
+}
+
+async function renderAdminLogin(app) {
+    app.innerHTML = `<div class="login-page">
+      <div class="login-card admin-login-card">
+        <div class="icon-wrap">
+          ${menuIcon('settings')}
+        </div>
+        <h1>Painel Administrativo</h1>
+        <p>Entre com o usu&aacute;rio administrador para editar menus, WhatsApp, logos, textos e identidade visual.</p>
+        <div class="form-group" style="text-align:left">
+          <label>Usu&aacute;rio</label>
+          <input type="text" id="admin-username" placeholder="admin">
+        </div>
+        <div class="form-group" style="text-align:left">
+          <label>Senha</label>
+          <input type="password" id="admin-password" placeholder="••••••••">
+        </div>
+        <button class="btn-submit" id="btn-admin-login">Entrar no painel</button>
+      </div>
+    </div>`;
+
+    const submit = async () => {
+        const username = document.getElementById('admin-username').value.trim();
+        const password = document.getElementById('admin-password').value;
+        if (!username || !password) {
+            toast('Informe usu&aacute;rio e senha do admin', 'error');
+            return;
+        }
+
+        const btn = document.getElementById('btn-admin-login');
+        btn.disabled = true;
+        btn.textContent = 'Entrando...';
+
+        try {
+            const res = await api('POST', '/admin/login', { username, password });
+            setToken(res.token);
+            setUser({ role: 'admin', username });
+            toast('Acesso liberado!', 'success');
+            applySiteSettings();
+            navigate('/admin-config');
+        } catch (err) {
+            toast(err.message, 'error');
+            btn.disabled = false;
+            btn.textContent = 'Entrar no painel';
+        }
+    };
+
+    document.getElementById('btn-admin-login').addEventListener('click', submit);
+    ['admin-username', 'admin-password'].forEach(id => {
+        document.getElementById(id).addEventListener('keydown', e => {
+            if (e.key === 'Enter') submit();
+        });
+    });
+}
+
+async function renderAdminConfig(app) {
+    const token = getToken();
+    if (!token) {
+        navigate('/admin-login');
+        return;
+    }
+
+    try {
+        await api('GET', '/admin/verify', null, token);
+    } catch {
+        removeToken();
+        applySiteSettings();
+        navigate('/admin-login');
+        return;
+    }
+
+    const settings = await api('GET', '/admin/settings', null, token).catch(() => getSettings());
+    systemSettings = deepMerge(cloneData(DEFAULT_SETTINGS), settings || {});
+    applySiteSettings();
+
+    const branding = systemSettings.branding || {};
+    const contact = systemSettings.contact || {};
+    const navigation = systemSettings.navigation || {};
+    const home = systemSettings.home || {};
+    const theme = systemSettings.theme || {};
+
+    app.innerHTML = `<div class="page-section container admin-page">
+      <div class="admin-header">
+        <div>
+          <h1 class="page-title">Configura&ccedil;&otilde;es do Site</h1>
+          <p class="admin-subtitle">Tudo que aparece no site principal pode ser ajustado aqui sem editar c&oacute;digo.</p>
+        </div>
+        <div class="admin-actions">
+          <button class="btn-secondary" id="btn-admin-preview">Atualizar visual</button>
+          <button class="btn-submit admin-save-btn" id="btn-admin-save">Salvar configura&ccedil;&otilde;es</button>
+          <button class="btn-voltar" id="btn-admin-logout" type="button">Sair</button>
+        </div>
+      </div>
+
+      <div class="admin-grid">
+        <section class="admin-card">
+          <h2>Marca e SEO</h2>
+          <div class="form-group"><label>Nome da marca</label><input id="cfg-site-name" value="${branding.siteName || ''}"></div>
+          <div class="form-group"><label>T&iacute;tulo da p&aacute;gina</label><input id="cfg-site-title" value="${branding.siteTitle || ''}"></div>
+          <div class="form-group"><label>Descri&ccedil;&atilde;o</label><textarea id="cfg-site-description">${branding.siteDescription || ''}</textarea></div>
+          <div class="form-group"><label>&Iacute;cone / favicon</label><input id="cfg-icon-url" value="${branding.iconUrl || ''}" placeholder="/ICONETESTE.png"></div>
+          <div class="form-group"><label>Logo tema claro</label><input id="cfg-logo-light" value="${branding.logoLightUrl || ''}" placeholder="/LOGO-BG.png"></div>
+          <div class="form-group"><label>Logo tema escuro</label><input id="cfg-logo-dark" value="${branding.logoDarkUrl || ''}" placeholder="/LOGO-BR.png"></div>
+          <div class="form-group"><label>Imagem social (OG/Twitter)</label><input id="cfg-og-image" value="${branding.ogImageUrl || ''}"></div>
+        </section>
+
+        <section class="admin-card">
+          <h2>WhatsApp e contato</h2>
+          <div class="form-group"><label>N&uacute;mero do WhatsApp</label><input id="cfg-whatsapp-number" value="${contact.whatsappNumber || ''}" placeholder="5585999999999"></div>
+          <div class="form-group"><label>Mensagem autom&aacute;tica</label><textarea id="cfg-whatsapp-message">${contact.whatsappMessage || ''}</textarea></div>
+          <div class="form-group"><label>T&iacute;tulo do bot&atilde;o flutuante</label><input id="cfg-whatsapp-title" value="${contact.whatsappButtonTitle || ''}"></div>
+        </section>
+
+        <section class="admin-card">
+          <h2>Menus</h2>
+          <p class="admin-help">Use JSON para controlar r&oacute;tulo, rota, &iacute;cone, destaque e visibilidade. Exemplo: [{"label":"In&iacute;cio","route":"/","icon":"home","visible":true,"highlight":false}]</p>
+          <div class="form-group"><label>Itens do menu</label><textarea id="cfg-menu-items" class="code-input">${JSON.stringify(navigation.menuItems || DEFAULT_SETTINGS.navigation.menuItems, null, 2)}</textarea></div>
+        </section>
+
+        <section class="admin-card">
+          <h2>Home principal</h2>
+          <div class="form-group"><label>T&iacute;tulo principal</label><input id="cfg-hero-title" value="${home.heroTitle || ''}"></div>
+          <div class="form-group"><label>Descri&ccedil;&atilde;o principal</label><textarea id="cfg-hero-description">${home.heroDescription || ''}</textarea></div>
+          <div class="form-row">
+            <div class="form-group"><label>Bot&atilde;o 1 texto</label><input id="cfg-primary-label" value="${home.primaryButtonLabel || ''}"></div>
+            <div class="form-group"><label>Bot&atilde;o 1 rota</label><input id="cfg-primary-route" value="${home.primaryButtonRoute || ''}"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Bot&atilde;o 2 texto</label><input id="cfg-secondary-label" value="${home.secondaryButtonLabel || ''}"></div>
+            <div class="form-group"><label>Bot&atilde;o 2 rota</label><input id="cfg-secondary-route" value="${home.secondaryButtonRoute || ''}"></div>
+          </div>
+          <div class="form-group"><label>T&iacute;tulo da se&ccedil;&atilde;o</label><input id="cfg-section-title" value="${home.sectionTitle || ''}"></div>
+          <div class="form-row">
+            <div class="form-group"><label>Card 1 destaque</label><input id="cfg-feature1-title" value="${home.featurePrimaryTitle || ''}"></div>
+            <div class="form-group"><label>Card 2 destaque</label><input id="cfg-feature2-title" value="${home.featureSecondaryTitle || ''}"></div>
+          </div>
+          <div class="form-group"><label>Card 1 texto</label><textarea id="cfg-feature1-text">${home.featurePrimaryText || ''}</textarea></div>
+          <div class="form-group"><label>Card 2 texto</label><textarea id="cfg-feature2-text">${home.featureSecondaryText || ''}</textarea></div>
+          <div class="form-row">
+            <div class="form-group"><label>Rodap&eacute; linha 1</label><input id="cfg-footer-line1" value="${home.footerLine1 || ''}"></div>
+            <div class="form-group"><label>Rodap&eacute; linha 2</label><input id="cfg-footer-line2" value="${home.footerLine2 || ''}"></div>
+          </div>
+        </section>
+
+        <section class="admin-card">
+          <h2>Tema e PWA</h2>
+          <div class="form-row">
+            <div class="form-group"><label>Cor tema claro</label><input id="cfg-theme-light" value="${theme.themeColorLight || ''}" placeholder="#4f46e5"></div>
+            <div class="form-group"><label>Cor tema escuro</label><input id="cfg-theme-dark" value="${theme.themeColorDark || ''}" placeholder="#182132"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Nome do app</label><input id="cfg-pwa-name" value="${theme.pwaName || ''}"></div>
+            <div class="form-group"><label>Nome curto do app</label><input id="cfg-pwa-short-name" value="${theme.pwaShortName || ''}"></div>
+          </div>
+        </section>
+      </div>
+    </div>`;
+
+    const preview = () => {
+        try {
+            systemSettings = deepMerge(cloneData(DEFAULT_SETTINGS), adminSettingsPayloadFromForm());
+            applySiteSettings();
+            if (getRoute() === '/') renderHome(document.getElementById('app'));
+            toast('Visual atualizado na hora.', 'success');
+        } catch (err) {
+            toast(`JSON do menu inválido: ${err.message}`, 'error');
+        }
+    };
+
+    document.getElementById('btn-admin-preview').addEventListener('click', preview);
+    document.getElementById('btn-admin-logout').addEventListener('click', () => {
+        removeToken();
+        applySiteSettings();
+        toast('Sessão encerrada.', 'info');
+        navigate('/');
+    });
+    document.getElementById('btn-admin-save').addEventListener('click', async () => {
+        const btn = document.getElementById('btn-admin-save');
+        btn.disabled = true;
+        btn.textContent = 'Salvando...';
+
+        try {
+            const payload = adminSettingsPayloadFromForm();
+            const res = await api('PUT', '/admin/settings', payload, token);
+            systemSettings = deepMerge(cloneData(DEFAULT_SETTINGS), res.settings || payload);
+            applySiteSettings();
+            toast('Configurações salvas com sucesso!', 'success');
+        } catch (err) {
+            toast(err.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Salvar configurações';
+        }
+    });
+}
+
 // ============================================================
 // PWA Install
 // ============================================================
 let deferredPrompt;
-const THEME_COLORS = {
-    light: '#4f46e5',
-    dark: '#182132'
-};
 
 function setInstallButtonsVisible(visible) {
     ['btn-pwa', 'btn-pwa-mobile'].forEach(id => {
@@ -585,7 +1024,8 @@ function updateThemeColorMeta() {
     const meta = document.getElementById('theme-color-meta');
     if (!meta) return;
     const dark = document.documentElement.classList.contains('dark');
-    meta.setAttribute('content', dark ? THEME_COLORS.dark : THEME_COLORS.light);
+    const colors = getThemeColors();
+    meta.setAttribute('content', dark ? colors.dark : colors.light);
 }
 
 function registerServiceWorker() {

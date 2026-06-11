@@ -53,6 +53,118 @@ function h(string $value): string {
     return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
+function default_system_settings(): array {
+    return [
+        'branding' => [
+            'siteName' => 'Guia Canindé',
+            'siteTitle' => 'Guia Canindé - Encontre os melhores negócios da cidade',
+            'siteDescription' => 'O melhor guia de empresas e serviços de Canindé. Encontre os melhores negócios da cidade.',
+            'iconUrl' => '/ICONETESTE.png',
+            'logoLightUrl' => '/LOGO-BG.png',
+            'logoDarkUrl' => '/LOGO-BR.png',
+            'ogImageUrl' => 'https://oguiacaninde.online/ICONETESTE.png',
+        ],
+        'contact' => [
+            'whatsappNumber' => '5585999999999',
+            'whatsappMessage' => 'Olá! Gostaria de falar com a equipe do Guia Canindé.',
+            'whatsappButtonTitle' => 'Fale conosco',
+        ],
+        'navigation' => [
+            'menuItems' => [
+                ['label' => 'Início', 'route' => '/', 'icon' => 'home', 'visible' => true, 'highlight' => false],
+                ['label' => 'Categorias', 'route' => '/categorias', 'icon' => 'grid', 'visible' => true, 'highlight' => false],
+                ['label' => 'Buscar', 'route' => '/buscar', 'icon' => 'search', 'visible' => true, 'highlight' => false],
+                ['label' => 'Login da Empresa', 'route' => '/empresa-login', 'icon' => 'building', 'visible' => true, 'highlight' => false],
+                ['label' => 'Cadastrar Negócio', 'route' => '/cadastrar', 'icon' => 'briefcase', 'visible' => true, 'highlight' => true],
+            ],
+        ],
+        'home' => [
+            'heroTitle' => 'Encontre tudo em Canindé',
+            'heroDescription' => 'Conecte-se diretamente com empresas e profissionais da sua cidade. Rápido, fácil e gratuito!',
+            'primaryButtonLabel' => 'O que está buscando?',
+            'primaryButtonRoute' => '/buscar',
+            'secondaryButtonLabel' => 'Cadastrar Meu Negócio',
+            'secondaryButtonRoute' => '/cadastrar',
+            'sectionTitle' => 'Como funciona?',
+            'featurePrimaryTitle' => '100% gratuito!',
+            'featurePrimaryText' => 'Conecte-se diretamente pelo WhatsApp com empresas e profissionais.',
+            'featureSecondaryTitle' => 'Encontre serviços perto de você',
+            'featureSecondaryText' => 'Encontre serviços próximos a você: pizzarias, encanadores, cabeleireiros e muito mais!',
+            'footerLine1' => 'Encontre o que precisa em Canindé',
+            'footerLine2' => 'Rápido, fácil e direto no WhatsApp',
+        ],
+        'theme' => [
+            'themeColorLight' => '#4f46e5',
+            'themeColorDark' => '#182132',
+            'pwaName' => 'Guia Canindé',
+            'pwaShortName' => 'Guia',
+        ],
+    ];
+}
+
+function ensure_system_settings_table(PDO $pdo): void {
+    static $checked = false;
+    if ($checked) {
+        return;
+    }
+
+    $pdo->exec(
+        'CREATE TABLE IF NOT EXISTS system_settings (
+            setting_key VARCHAR(191) NOT NULL PRIMARY KEY,
+            setting_value LONGTEXT NOT NULL,
+            createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
+    );
+
+    $checked = true;
+}
+
+function deep_merge_settings(array $defaults, array $stored): array {
+    foreach ($stored as $key => $value) {
+        if (isset($defaults[$key]) && is_array($defaults[$key]) && is_array($value)) {
+            $defaults[$key] = deep_merge_settings($defaults[$key], $value);
+            continue;
+        }
+        $defaults[$key] = $value;
+    }
+
+    return $defaults;
+}
+
+function load_system_settings(PDO $pdo): array {
+    ensure_system_settings_table($pdo);
+    $defaults = default_system_settings();
+    $stmt = $pdo->query('SELECT setting_key, setting_value FROM system_settings');
+    $stored = [];
+
+    foreach ($stmt->fetchAll() as $row) {
+        $decoded = json_decode((string)$row['setting_value'], true);
+        $stored[(string)$row['setting_key']] = json_last_error() === JSON_ERROR_NONE ? $decoded : $row['setting_value'];
+    }
+
+    return deep_merge_settings($defaults, $stored);
+}
+
+function save_system_settings(PDO $pdo, array $settings): array {
+    ensure_system_settings_table($pdo);
+    $merged = deep_merge_settings(default_system_settings(), $settings);
+    $stmt = $pdo->prepare(
+        'INSERT INTO system_settings (setting_key, setting_value)
+         VALUES (:key, :value)
+         ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)'
+    );
+
+    foreach ($merged as $key => $value) {
+        $stmt->execute([
+            ':key' => $key,
+            ':value' => json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+        ]);
+    }
+
+    return $merged;
+}
+
 function page_shell(string $title, string $body): void {
     header('Content-Type: text/html; charset=utf-8');
     echo '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' . h($title) . '</title><style>
@@ -280,6 +392,26 @@ if ($method === 'POST' && $path === '/api/admin/login') {
 if ($method === 'GET' && $path === '/api/admin/verify') {
     require_admin($jwtSecret);
     JsonResponse::send(['valid' => true]);
+}
+
+if ($method === 'GET' && $path === '/api/settings') {
+    JsonResponse::send(load_system_settings(db()));
+}
+
+if ($method === 'GET' && $path === '/api/admin/settings') {
+    require_admin($jwtSecret);
+    JsonResponse::send(load_system_settings(db()));
+}
+
+if ($method === 'PUT' && $path === '/api/admin/settings') {
+    require_admin($jwtSecret);
+    $body = JsonResponse::body();
+    if (!is_array($body)) {
+        JsonResponse::send(['message' => 'Payload inválido'], 422);
+    }
+
+    $settings = save_system_settings(db(), $body);
+    JsonResponse::send(['ok' => true, 'settings' => $settings]);
 }
 
 if ($method === 'GET' && $path === '/api/admin/stats') {

@@ -115,6 +115,30 @@ INSERT INTO `ratings` VALUES ('0a1b7c2c-2c3a-4c63-bdf5-07c510649361',5,'b3e1f18a
 UNLOCK TABLES;
 
 
+DROP TABLE IF EXISTS `system_settings`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `system_settings` (
+  `setting_key` varchar(191) NOT NULL,
+  `setting_value` longtext NOT NULL,
+  `createdAt` datetime NOT NULL DEFAULT current_timestamp(),
+  `updatedAt` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`setting_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+LOCK TABLES `system_settings` WRITE;
+/*!40000 ALTER TABLE `system_settings` DISABLE KEYS */;
+INSERT INTO `system_settings` VALUES
+('branding','{"siteName":"Guia Canindé","siteTitle":"Guia Canindé - Encontre os melhores negócios da cidade","siteDescription":"O melhor guia de empresas e serviços de Canindé. Encontre os melhores negócios da cidade.","iconUrl":"/ICONETESTE.png","logoLightUrl":"/LOGO-BG.png","logoDarkUrl":"/LOGO-BR.png","ogImageUrl":"https://oguiacaninde.online/ICONETESTE.png"}',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP),
+('contact','{"whatsappNumber":"5585999999999","whatsappMessage":"Olá! Gostaria de falar com a equipe do Guia Canindé.","whatsappButtonTitle":"Fale conosco"}',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP),
+('home','{"heroTitle":"Encontre tudo em Canindé","heroDescription":"Conecte-se diretamente com empresas e profissionais da sua cidade. Rápido, fácil e gratuito!","primaryButtonLabel":"O que está buscando?","primaryButtonRoute":"/buscar","secondaryButtonLabel":"Cadastrar Meu Negócio","secondaryButtonRoute":"/cadastrar","sectionTitle":"Como funciona?","featurePrimaryTitle":"100% gratuito!","featurePrimaryText":"Conecte-se diretamente pelo WhatsApp com empresas e profissionais.","featureSecondaryTitle":"Encontre serviços perto de você","featureSecondaryText":"Encontre serviços próximos a você: pizzarias, encanadores, cabeleireiros e muito mais!","footerLine1":"Encontre o que precisa em Canindé","footerLine2":"Rápido, fácil e direto no WhatsApp"}',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP),
+('navigation','{"menuItems":[{"label":"Início","route":"/","icon":"home","visible":true,"highlight":false},{"label":"Categorias","route":"/categorias","icon":"grid","visible":true,"highlight":false},{"label":"Buscar","route":"/buscar","icon":"search","visible":true,"highlight":false},{"label":"Login da Empresa","route":"/empresa-login","icon":"building","visible":true,"highlight":false},{"label":"Cadastrar Negócio","route":"/cadastrar","icon":"briefcase","visible":true,"highlight":true}]}',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP),
+('theme','{"themeColorLight":"#4f46e5","themeColorDark":"#182132","pwaName":"Guia Canindé","pwaShortName":"Guia"}',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP);
+/*!40000 ALTER TABLE `system_settings` ENABLE KEYS */;
+UNLOCK TABLES;
+
 DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;

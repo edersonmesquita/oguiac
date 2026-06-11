@@ -529,6 +529,19 @@ textarea {
 }
 .btn-submit:hover { background: var(--accent-dark); }
 .btn-submit:disabled { opacity: .6; cursor: not-allowed; }
+.btn-secondary {
+    width: auto;
+    background: var(--white);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: .85rem 1rem;
+    border-radius: var(--radius);
+    font-size: .95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color .2s, color .2s;
+}
+.btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
 
 /* ---- LOGIN EMPRESA ---- */
 .login-page {
@@ -578,6 +591,60 @@ textarea {
     text-align: center;
 }
 .btn-voltar:hover { border-color: var(--primary); color: var(--primary); }
+
+/* ---- ADMIN ---- */
+.admin-page {
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+}
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+.admin-subtitle {
+    color: var(--text-light);
+    margin-top: .35rem;
+}
+.admin-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+    justify-content: flex-end;
+}
+.admin-actions .btn-submit,
+.admin-actions .btn-voltar {
+    width: auto;
+    margin-top: 0;
+}
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+}
+.admin-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    padding: 1.35rem;
+    box-shadow: var(--shadow);
+}
+.admin-card h2 {
+    font-size: 1.05rem;
+    margin-bottom: 1rem;
+}
+.admin-help {
+    color: var(--text-light);
+    font-size: .85rem;
+    margin-bottom: .8rem;
+}
+.code-input {
+    min-height: 240px !important;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: .85rem;
+}
 
 /* ---- BOTAO WHATSAPP FLUTUANTE ---- */
 .whatsapp-float {
@@ -758,6 +825,16 @@ html.dark .btn-voltar,
 html.dark .page-btn {
     background: #182132;
 }
+html.dark .btn-secondary,
+html.dark .admin-card {
+    background: #253042;
+    border-color: rgba(148, 163, 184, .12);
+    color: #F8FAFC;
+}
+html.dark .admin-subtitle,
+html.dark .admin-help {
+    color: #CBD5E1;
+}
 html.dark .empty-state svg,
 html.dark .dark-toggle svg {
     color: #A8B6C9;
@@ -881,6 +958,14 @@ html.dark .card-como p strong { color: #C084FC; }
         word-break: break-word;
     }
     .form-row { grid-template-columns: 1fr; }
+    .admin-header,
+    .admin-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .admin-grid {
+        grid-template-columns: 1fr;
+    }
     .navbar-links .btn-instalar { display: none; }
     .pwa-install-mobile {
         right: 1rem;
